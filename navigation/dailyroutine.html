@@ -1,0 +1,835 @@
+---
+toc: true
+layout: post
+title: Daily Routine
+permalink: /routine/
+nav: true
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Routine Planner | SD Auto</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <style>
+    /* SD Auto Professional Daily Routine Styles */
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 0;
+      margin: 0;
+      color: #1e293b;
+    }
+
+    h2 {
+      margin-bottom: 24px;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0066cc 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .trip-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+    }
+
+    .trip-link:hover {
+      background: linear-gradient(135deg, #0052a3 0%, #004080 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+    }
+
+    form {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      padding: 28px;
+      border-radius: 20px;
+      box-shadow: 
+        0 4px 6px -1px rgba(0, 102, 204, 0.05),
+        0 10px 15px -3px rgba(0, 102, 204, 0.08);
+      border: 1px solid rgba(0, 102, 204, 0.08);
+      margin-bottom: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: end;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #0066cc;
+      font-size: 14px;
+      margin-bottom: 6px;
+      letter-spacing: 0.025em;
+    }
+
+    input, select {
+      padding: 14px 18px;
+      font-size: 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background-color: #f8fafc;
+      color: #1e293b;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      min-width: 180px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0066cc;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+    }
+
+    button {
+      padding: 14px 24px;
+      font-size: 15px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .add-button {
+      background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+    }
+
+    .add-button:hover {
+      background: linear-gradient(135deg, #0052a3 0%, #004080 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+    }
+
+    .favorites-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      margin-top: 0;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .favorites-btn:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .favorites-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0, 102, 204, 0.15);
+      margin-top: 4px;
+    }
+
+    .favorites-dropdown div {
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .favorites-dropdown div:last-child {
+      border-bottom: none;
+    }
+
+    .favorites-dropdown div:hover {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      color: #0066cc;
+    }
+
+    .route-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .route-actions button {
+      font-size: 13px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .route-actions .edit-btn {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+    }
+
+    .route-actions .edit-btn:hover {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      transform: translateY(-1px);
+    }
+
+    .route-actions .delete-btn {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+    }
+
+    .route-actions .delete-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-1px);
+    }
+
+    .route-actions .navigate-btn {
+      background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.25);
+    }
+
+    .route-actions .navigate-btn:hover {
+      background: linear-gradient(135deg, #0052a3 0%, #004080 100%);
+      transform: translateY(-1px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 
+        0 4px 6px -1px rgba(0, 102, 204, 0.05),
+        0 10px 15px -3px rgba(0, 102, 204, 0.08);
+      border: 1px solid rgba(0, 102, 204, 0.08);
+    }
+
+    th, td {
+      border: none;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 16px 20px;
+      vertical-align: top;
+    }
+
+    th {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      color: #0066cc;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      background: white;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      margin-bottom: 12px;
+      padding: 16px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.06);
+      border: 1px solid rgba(0, 102, 204, 0.06);
+      cursor: grab;
+      transition: all 0.2s ease;
+    }
+
+    li:hover {
+      border-color: rgba(0, 102, 204, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+    }
+
+    li:active {
+      cursor: grabbing;
+    }
+
+    .sortable-chosen {
+      opacity: 0.9;
+      transform: scale(1.02) rotate(1deg);
+      box-shadow: 0 8px 25px rgba(0, 102, 204, 0.2);
+      border-color: #0066cc;
+    }
+
+    .sortable-ghost {
+      opacity: 0.5;
+      border: 2px dashed #7C3AED;
+      background-color: #f4ebff;
+    }
+
+    .slot {
+      min-height: 40px;
+      padding: 5px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .slot.drag-over {
+      background-color: #f0f4ff;
+      outline: 2px dashed #7C3AED;
+    }
+
+    .time-cell {
+      width: 120px;
+      background-color: #f3f3f3;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #map {
+      height: 400px;
+      margin-top: 30px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Access Control: Loading/Denied/Content States -->
+<div id="access-loading" class="access-control-overlay">
+  <div class="access-control-card">
+    <div class="spinner"></div>
+    <p>Checking subscription...</p>
+  </div>
+</div>
+
+<div id="access-denied" class="access-control-overlay" style="display: none;">
+  <div class="access-control-card">
+    <div class="lock-icon">🔒</div>
+    <h2>Premium Feature</h2>
+    <p>Daily Routine Planner is available for <strong>Plus</strong> and <strong>Pro</strong> members.</p>
+    <p class="tier-info">Upgrade to unlock this feature and more!</p>
+    <div class="access-buttons">
+      <a href="{{site.baseurl}}/pricing" class="upgrade-btn">Upgrade Now</a>
+      <a href="{{site.baseurl}}/" class="back-btn">Go Home</a>
+    </div>
+  </div>
+</div>
+
+<div id="main-content" style="display: none;">
+<h2>Daily Schedule</h2>
+
+
+
+<form id="addItemForm">
+  <label for="timeSelect">Time:</label>
+  <select id="timeSelect"></select>
+
+  <div style="position: relative;">
+    <input type="text" id="startInput" placeholder="Start location" required />
+    <button type="button" class="favorites-btn" id="addStartFavBtn">➕ Add to Favorites</button>
+    <button type="button" class="favorites-btn" id="showStartFavBtn">⭐ Favorites</button>
+    <div id="startFavoritesDropdown" class="favorites-dropdown" style="display: none;"></div>
+  </div>
+
+  <div style="position: relative;">
+    <input type="text" id="destinationInput" placeholder="Destination" required />
+    <button type="button" class="favorites-btn" id="addDestFavBtn">➕ Add to Favorites</button>
+    <button type="button" class="favorites-btn" id="showDestFavBtn">⭐ Favorites</button>
+    <div id="destinationFavoritesDropdown" class="favorites-dropdown" style="display: none;"></div>
+  </div>
+
+  <button type="submit" class="add-button">➕ Add Route</button>
+</form>
+
+<div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0;">
+  <button id="prevDayBtn" class="primary-action-btn">←</button>
+  <span id="currentDayLabel" style="font-weight: bold; font-size: 18px;">Monday</span>
+  <button id="nextDayBtn" class="primary-action-btn">→</button>
+</div>
+
+<table id="scheduleTable">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Routes</th>
+    </tr>
+  </thead>
+  <tbody id="scheduleBody"></tbody>
+</table>
+
+<button onclick="updateCurrentHourRoute()" class="primary-action-btn">
+  Show Current Hour Trip
+</button>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+<script>
+  const scheduleBody = document.getElementById('scheduleBody');
+  const timeSelect = document.getElementById('timeSelect');
+  const addItemForm = document.getElementById('addItemForm');
+  const startInput = document.getElementById('startInput');
+  const destinationInput = document.getElementById('destinationInput');
+
+  const addStartFavBtn = document.getElementById('addStartFavBtn');
+  const addDestFavBtn = document.getElementById('addDestFavBtn');
+  const showStartFavBtn = document.getElementById('showStartFavBtn');
+  const showDestFavBtn = document.getElementById('showDestFavBtn');
+
+  const startFavoritesDropdown = document.getElementById('startFavoritesDropdown');
+  const destinationFavoritesDropdown = document.getElementById('destinationFavoritesDropdown');
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  let currentDayIndex = new Date().getDay() - 1;
+  if (currentDayIndex < 0) currentDayIndex = 6;
+
+  const currentDayLabel = document.getElementById('currentDayLabel');
+  const prevDayBtn = document.getElementById('prevDayBtn');
+  const nextDayBtn = document.getElementById('nextDayBtn');
+
+  function getCurrentDayName() {
+    return daysOfWeek[currentDayIndex];
+  }
+
+  function getWeeklySchedule() {
+    return JSON.parse(localStorage.getItem('dailyScheduleByDay')) || {};
+  }
+
+  function setWeeklySchedule(schedule) {
+    localStorage.setItem('dailyScheduleByDay', JSON.stringify(schedule));
+  }
+
+  function getFavorites(type) {
+    return JSON.parse(localStorage.getItem(`${type}Favorites`)) || [];
+  }
+
+  function addFavorite(type, value) {
+    let favorites = getFavorites(type);
+    if (!favorites.includes(value)) {
+      favorites.push(value);
+      localStorage.setItem(`${type}Favorites`, JSON.stringify(favorites));
+      alert(`Added "${value}" to ${type} favorites.`);
+    }
+  }
+
+  function showFavorites(dropdown, type, inputEl) {
+    const favorites = getFavorites(type);
+    dropdown.innerHTML = '';
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    favorites.forEach(item => {
+      const div = document.createElement('div');
+      div.textContent = item;
+      div.style.cursor = 'pointer';
+      div.style.padding = '6px 10px';
+      div.style.borderBottom = '1px solid #eee';
+      div.onclick = () => {
+        inputEl.value = item;
+        dropdown.style.display = 'none';
+      };
+      dropdown.appendChild(div);
+    });
+    if (favorites.length === 0) {
+      dropdown.innerHTML = '<div style="padding: 8px; color: #666;">No favorites yet</div>';
+    }
+  }
+
+  addStartFavBtn.onclick = () => {
+    const val = startInput.value.trim();
+    if (val) addFavorite('start', val);
+  };
+
+  addDestFavBtn.onclick = () => {
+    const val = destinationInput.value.trim();
+    if (val) addFavorite('destination', val);
+  };
+
+  showStartFavBtn.onclick = () => {
+    showFavorites(startFavoritesDropdown, 'start', startInput);
+  };
+
+  showDestFavBtn.onclick = () => {
+    showFavorites(destinationFavoritesDropdown, 'destination', destinationInput);
+  };
+
+  let weeklySchedule = getWeeklySchedule();
+  let scheduleData = weeklySchedule[getCurrentDayName()] || {};
+
+  function formatTime(hour) {
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:00 ${suffix}`;
+  }
+
+  function saveSchedule() {
+    weeklySchedule[getCurrentDayName()] = scheduleData;
+    setWeeklySchedule(weeklySchedule);
+  }
+
+  function loadDay(dayIndex) {
+    currentDayIndex = dayIndex;
+    currentDayLabel.textContent = getCurrentDayName();
+    weeklySchedule = getWeeklySchedule();
+    scheduleData = weeklySchedule[getCurrentDayName()] || {};
+    renderSchedule();
+    enableDragAndDrop();
+  }
+
+  prevDayBtn.onclick = () => {
+    currentDayIndex = (currentDayIndex - 1 + 7) % 7;
+    loadDay(currentDayIndex);
+  };
+
+  nextDayBtn.onclick = () => {
+    currentDayIndex = (currentDayIndex + 1) % 7;
+    loadDay(currentDayIndex);
+  };
+
+  function createRouteElement(hour, route, index) {
+    const li = document.createElement('li');
+    li.textContent = `${route.start} → ${route.destination}`;
+
+    const actions = document.createElement('span');
+    actions.className = 'route-actions';
+
+    const navBtn = document.createElement('button');
+    navBtn.textContent = 'Navigate';
+    navBtn.className = 'navigate-btn';
+    navBtn.onclick = () => {
+      const url = `{{ site.baseurl }}/route/?origin=${encodeURIComponent(route.start)}&destination=${encodeURIComponent(route.destination)}&mode=driving`;
+      window.location.href = url;
+    };
+    actions.appendChild(navBtn);
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.className = 'edit-btn';
+    editBtn.onclick = () => {
+      startInput.value = route.start;
+      destinationInput.value = route.destination;
+      timeSelect.value = hour;
+      scheduleData[hour].splice(index, 1);
+      if (scheduleData[hour].length === 0) delete scheduleData[hour];
+      saveSchedule();
+      renderSchedule();
+      enableDragAndDrop();
+    };
+    actions.appendChild(editBtn);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.onclick = () => {
+      scheduleData[hour].splice(index, 1);
+      if (scheduleData[hour].length === 0) delete scheduleData[hour];
+      saveSchedule();
+      renderSchedule();
+      enableDragAndDrop();
+    };
+    actions.appendChild(deleteBtn);
+
+    li.appendChild(actions);
+    return li;
+  }
+
+  function renderSchedule() {
+    scheduleBody.innerHTML = '';
+    for (let hour = 0; hour < 24; hour++) {
+      const row = document.createElement('tr');
+      const timeCell = document.createElement('td');
+      const slotCell = document.createElement('td');
+
+      timeCell.textContent = formatTime(hour);
+      timeCell.className = 'time-cell';
+      slotCell.className = 'slot';
+      slotCell.id = `slot-${hour}`;
+
+      const ul = document.createElement('ul');
+      if (scheduleData[hour]) {
+        scheduleData[hour].forEach((route, index) => {
+          const li = createRouteElement(hour, route, index);
+          ul.appendChild(li);
+        });
+      }
+      slotCell.appendChild(ul);
+      row.appendChild(timeCell);
+      row.appendChild(slotCell);
+      scheduleBody.appendChild(row);
+    }
+  }
+
+  function enableDragAndDrop() {
+    for (let hour = 0; hour < 24; hour++) {
+      const ul = document.getElementById(`slot-${hour}`).querySelector('ul');
+      Sortable.create(ul, {
+        group: 'shared',
+        animation: 150,
+        onEnd: function (evt) {
+          const fromHour = parseInt(evt.from.parentElement.id.split('-')[1]);
+          const toHour = parseInt(evt.to.parentElement.id.split('-')[1]);
+          const [movedItem] = scheduleData[fromHour].splice(evt.oldIndex, 1);
+          if (!scheduleData[toHour]) scheduleData[toHour] = [];
+          scheduleData[toHour].splice(evt.newIndex, 0, movedItem);
+          if (scheduleData[fromHour].length === 0) delete scheduleData[fromHour];
+          saveSchedule();
+          renderSchedule();
+          enableDragAndDrop();
+        }
+      });
+    }
+  }
+
+  for (let hour = 0; hour < 24; hour++) {
+    const option = document.createElement('option');
+    option.value = hour;
+    option.textContent = formatTime(hour);
+    timeSelect.appendChild(option);
+  }
+
+  addItemForm.onsubmit = (e) => {
+    e.preventDefault();
+    const hour = timeSelect.value;
+    const start = startInput.value.trim();
+    const destination = destinationInput.value.trim();
+    if (!start || !destination) return;
+    const route = { start, destination };
+    if (!scheduleData[hour]) scheduleData[hour] = [];
+    scheduleData[hour].push(route);
+    saveSchedule();
+    renderSchedule();
+    enableDragAndDrop();
+    startInput.value = '';
+    destinationInput.value = '';
+  };
+
+  loadDay(currentDayIndex);
+
+  // Make map globally accessible for resize handling
+  window.routineMap = L.map('map').setView([37.7749, -122.4194], 10);
+  const map = window.routineMap;
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+  let currentRouteControl = null;
+
+  async function geocodePlace(place) {
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`);
+    const data = await response.json();
+    return data[0];
+  }
+
+  async function drawRoute(startName, destName) {
+    try {
+      const [start, dest] = await Promise.all([
+        geocodePlace(startName),
+        geocodePlace(destName)
+      ]);
+      if (!start || !dest) {
+        alert("Could not find one or both locations.");
+        return;
+      }
+      if (currentRouteControl) map.removeControl(currentRouteControl);
+      const startLatLng = L.latLng(parseFloat(start.lat), parseFloat(start.lon));
+      const destLatLng = L.latLng(parseFloat(dest.lat), parseFloat(dest.lon));
+      currentRouteControl = L.Routing.control({
+        waypoints: [startLatLng, destLatLng],
+        routeWhileDragging: false,
+        addWaypoints: false,
+        draggableWaypoints: false,
+        show: false
+      }).addTo(map);
+      map.fitBounds(L.latLngBounds([startLatLng, destLatLng]), { padding: [50, 50] });
+    } catch (error) {
+      console.error("Routing error:", error);
+      alert("An error occurred while displaying the route.");
+    }
+  }
+
+  function updateCurrentHourRoute() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const routes = scheduleData[currentHour];
+    if (routes && routes.length > 0) {
+      const { start, destination } = routes[0];
+      drawRoute(start, destination);
+    } else if (currentRouteControl) {
+      map.removeControl(currentRouteControl);
+      currentRouteControl = null;
+    }
+  }
+
+updateCurrentHourRoute();
+  setInterval(updateCurrentHourRoute, 60 * 1000);
+</script>
+
+</div><!-- End main-content -->
+
+<!-- Subscription Access Check -->
+<script type="module">
+  import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  
+  async function checkAccess() {
+    try {
+      // Check if user is logged in
+      const userResponse = await fetch(`${pythonURI}/api/user`, fetchOptions);
+      if (!userResponse.ok) {
+        // Not logged in - redirect to login
+        window.location.href = '{{site.baseurl}}/login';
+        return;
+      }
+      
+      const user = await userResponse.json();
+      
+      // Admins have full access
+      if (user.role === 'Admin') {
+        showContent();
+        return;
+      }
+      
+      // Check subscription
+      const subResponse = await fetch(`${pythonURI}/api/subscription`, fetchOptions);
+      if (subResponse.ok) {
+        const subscription = await subResponse.json();
+        // Plus and Pro have access
+        if (subscription.tier === 'plus' || subscription.tier === 'pro') {
+          showContent();
+          return;
+        }
+      }
+      
+      // Free tier - show access denied
+      showAccessDenied();
+      
+    } catch (error) {
+      console.error('Access check error:', error);
+      showAccessDenied();
+    }
+  }
+  
+  function showContent() {
+    document.getElementById('access-loading').style.display = 'none';
+    document.getElementById('access-denied').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    
+    // Fix Leaflet map rendering - invalidate size after container becomes visible
+    setTimeout(() => {
+      if (window.routineMap) {
+        window.routineMap.invalidateSize();
+      }
+    }, 100);
+  }
+  
+  function showAccessDenied() {
+    document.getElementById('access-loading').style.display = 'none';
+    document.getElementById('access-denied').style.display = 'flex';
+    document.getElementById('main-content').style.display = 'none';
+  }
+  
+  // Run check on page load
+  checkAccess();
+</script>
+
+<style>
+  .access-control-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+  }
+  .access-control-card {
+    text-align: center;
+    padding: 48px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 24px;
+    border: 1px solid #334155;
+    max-width: 450px;
+  }
+  .access-control-card h2 {
+    color: #f1f5f9;
+    margin-bottom: 16px;
+  }
+  .access-control-card p {
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+  .access-control-card .tier-info {
+    color: #22c55e;
+    font-weight: 600;
+  }
+  .lock-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #334155;
+    border-top-color: #0066cc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .access-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+  }
+  .upgrade-btn {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .upgrade-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  }
+  .back-btn {
+    padding: 14px 28px;
+    background: #334155;
+    color: #f1f5f9;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .back-btn:hover {
+    background: #475569;
+  }
+</style>
+
+</body>
+</html>
+
