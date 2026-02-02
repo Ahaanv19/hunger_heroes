@@ -1,9 +1,9 @@
-title: SD Auto
-description: "An online program to find the best and most optimible route for traveling in San Diego"
+title: Hunger Heroes
+description: "An initiative dedicated to combating food insecurity in the City of San Diego"
 owner_name: Ahaan Vaidyanathan
 github_username: Ahaanv19
-github_repo: "SD_Auto_Frontend" 
-baseurl: "/SD_Auto_Frontend"
+github_repo: "Hunger_Heroes" 
+baseurl: "/Hunger_Heroes"
 future: true
 remote_theme: jekyll/minima
 minima:
