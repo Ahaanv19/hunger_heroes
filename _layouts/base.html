@@ -499,7 +499,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 lg:h-20">
         <!-- Logo Section -->
-        <a href="/SD_Auto_Frontend/" class="flex items-center gap-3 group">
+        <a href="{{site.baseurl}}/" class="flex items-center gap-3 group">
           <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
             <svg class="w-6 h-6 lg:w-7 lg:h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -518,6 +518,7 @@
             {{ page | split: "/" | last | split: "." | first | capitalize }}
           </a>
           {% endfor %}
+          
           <!-- Upgrade/Premium Link -->
           <a href="{{site.baseurl}}/pricing" id="upgrade-nav-link" class="nav-link px-4 py-2 text-sm font-medium text-yellow-500 hover:text-yellow-400 rounded-lg transition-colors flex items-center gap-1">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -535,12 +536,12 @@
         </nav>
 
         <!-- Actions -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-shrink-0">
           <!-- Sign In Button -->
           <a href="{{site.baseurl}}/login"
-            class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-white rounded-xl font-semibold text-sm shadow-medium"
+            class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-white rounded-xl font-semibold text-sm shadow-medium whitespace-nowrap"
             id="sign-in-btn">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             <span>Sign In</span>
