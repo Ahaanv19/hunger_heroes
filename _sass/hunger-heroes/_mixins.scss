@@ -1,0 +1,139 @@
+// ==============================================
+// MIXINS — Reusable Patterns
+// ==============================================
+
+@import "variables";
+
+// ----- Glass Morphism -----
+@mixin glass($bg: rgba(255, 255, 255, 0.7), $border: rgba(255, 255, 255, 0.3)) {
+  background: $bg;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $border;
+}
+
+@mixin glass-dark($bg: rgba(15, 23, 42, 0.7), $border: rgba(255, 255, 255, 0.1)) {
+  background: $bg;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $border;
+}
+
+// ----- Gradient Text -----
+@mixin gradient-text($from: $primary-500, $via: $accent-500, $to: $primary-500) {
+  background: linear-gradient(135deg, $from 0%, $via 50%, $to 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-x 8s ease infinite;
+}
+
+// ----- Card Hover -----
+@mixin card-hover($shadow-color: rgba(0, 102, 204, 0.2)) {
+  transition: all $transition-cubic;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px $shadow-color;
+  }
+}
+
+// ----- Shimmer Button -----
+@mixin shimmer-button($gradient-from: $primary-500, $gradient-to: $primary-700) {
+  background: linear-gradient(135deg, $gradient-from 0%, $gradient-to 100%);
+  transition: all $transition-normal;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px rgba($gradient-from, 0.5);
+  }
+}
+
+// ----- Nav Link Animated Underline -----
+@mixin animated-underline($color-from: $primary-500, $color-to: $accent-500) {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $color-from, $color-to);
+    transition: width $transition-normal;
+    border-radius: 2px;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+// ----- Responsive Breakpoints -----
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (min-width: 640px) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: 768px) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: 1024px) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: 1280px) { @content; }
+  }
+}
+
+// ----- Skeleton Loading -----
+@mixin skeleton-base {
+  background: linear-gradient(90deg, $slate-200 0%, $slate-100 50%, $slate-200 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: $radius-sm;
+}
+
+@mixin skeleton-base-dark {
+  background: linear-gradient(90deg, $slate-700 0%, $slate-600 50%, $slate-700 100%);
+  background-size: 200% 100%;
+}
+
+// ----- Section Divider -----
+@mixin section-divider($color: $green-500) {
+  position: relative;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, $color, lighten($color, 15%));
+    border-radius: $radius-full;
+    margin: $spacing-lg auto 0;
+  }
+}
+
+// ----- Focus Ring -----
+@mixin focus-ring($color: $primary-500) {
+  &:focus-visible {
+    outline: 2px solid $color;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}

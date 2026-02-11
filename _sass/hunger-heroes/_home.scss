@@ -1,0 +1,150 @@
+// ==============================================
+// HOME — Styles specific to homepage sections
+// ==============================================
+
+@import "variables";
+@import "mixins";
+
+// ===== HERO PARALLAX DECORATIVE BLOBS =====
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  filter: blur(48px);
+  opacity: 0.2;
+  animation: float 6s ease-in-out infinite;
+}
+
+// ===== STATISTICS COUNTER ANIMATION =====
+.stat-counter {
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s ease;
+}
+
+// ===== IMPACT CARD GLOW =====
+.impact-card {
+  position: relative;
+  overflow: hidden;
+  transition: all $transition-slow;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, $green-500, $emerald-600, $accent-500);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity $transition-slow;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+
+// ===== TESTIMONIALS =====
+.testimonial-card {
+  position: relative;
+  padding: $spacing-xl;
+  border-radius: $radius-2xl;
+  transition: all $transition-cubic;
+
+  &::before {
+    content: '\201C';
+    position: absolute;
+    top: $spacing-md;
+    left: $spacing-lg;
+    font-size: 4rem;
+    font-family: Georgia, serif;
+    line-height: 1;
+    opacity: 0.1;
+    color: $green-600;
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: $shadow-large;
+  }
+}
+
+// ===== PARTNERS MARQUEE =====
+.partners-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+
+  .marquee-inner {
+    display: inline-flex;
+    animation: marquee 30s linear infinite;
+    gap: $spacing-3xl;
+  }
+
+  &:hover .marquee-inner {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+// ===== NEWSLETTER / CTA SECTION =====
+.cta-glow {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: linear-gradient(135deg, $green-400, $emerald-500, $accent-500, $green-400);
+    background-size: 300% 300%;
+    border-radius: $radius-3xl;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(20px);
+    animation: gradient-x 6s ease infinite;
+  }
+}
+
+// ===== HOW IT WORKS — CONNECTOR LINE =====
+.how-it-works-step {
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 3.5rem;
+    bottom: -1.5rem;
+    width: 2px;
+    background: linear-gradient(180deg, $green-400, transparent);
+    opacity: 0.3;
+  }
+}
+
+// ===== FOOD TYPE CARDS (Slider items) =====
+.food-card {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $green-500, $emerald-500);
+    transform: scaleX(0);
+    transition: transform $transition-normal;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}

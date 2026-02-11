@@ -1,0 +1,82 @@
+// ==============================================
+// VARIABLES — Design Tokens for Hunger Heroes
+// ==============================================
+
+// ----- Color Palette (San Diego Inspired) -----
+$primary-50:   #eff6ff;
+$primary-100:  #dbeafe;
+$primary-200:  #bfdbfe;
+$primary-300:  #93c5fd;
+$primary-400:  #60a5fa;
+$primary-500:  #0066cc;  // San Diego Blue
+$primary-600:  #0052a3;
+$primary-700:  #004080;
+$primary-800:  #003366;
+$primary-900:  #002244;
+
+$accent-500:   #06b6d4;
+$accent-600:   #0891b2;
+$accent-700:   #0e7490;
+
+$green-100:    #dcfce7;
+$green-400:    #4ade80;
+$green-500:    #22c55e;
+$green-600:    #16a34a;
+$green-700:    #15803d;
+
+$emerald-500:  #10b981;
+$emerald-600:  #059669;
+
+$success:      #10b981;
+$warning:      #f59e0b;
+$error:        #ef4444;
+
+$background:   #f8fafc;
+$darkbg:       #0f172a;
+$surface:      #ffffff;
+$surface-dark: #1e293b;
+
+$slate-50:     #f8fafc;
+$slate-100:    #f1f5f9;
+$slate-200:    #e2e8f0;
+$slate-300:    #cbd5e1;
+$slate-400:    #94a3b8;
+$slate-500:    #64748b;
+$slate-600:    #475569;
+$slate-700:    #334155;
+$slate-800:    #1e293b;
+$slate-900:    #0f172a;
+
+// ----- Typography -----
+$font-family-sans:    'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+$font-family-display: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, sans-serif;
+
+// ----- Spacing -----
+$spacing-xs:   0.25rem;
+$spacing-sm:   0.5rem;
+$spacing-md:   1rem;
+$spacing-lg:   1.5rem;
+$spacing-xl:   2rem;
+$spacing-2xl:  3rem;
+$spacing-3xl:  4rem;
+
+// ----- Border Radius -----
+$radius-sm:    0.5rem;
+$radius-md:    0.75rem;
+$radius-lg:    1rem;
+$radius-xl:    1.5rem;
+$radius-2xl:   2rem;
+$radius-3xl:   2.5rem;
+$radius-full:  9999px;
+
+// ----- Shadows -----
+$shadow-soft:    0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+$shadow-medium:  0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+$shadow-large:   0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.1);
+$shadow-glow:    0 0 40px rgba(0, 102, 204, 0.15);
+
+// ----- Transitions -----
+$transition-fast:    150ms ease;
+$transition-normal:  300ms ease;
+$transition-slow:    500ms ease;
+$transition-cubic:   300ms cubic-bezier(0.4, 0, 0.2, 1);
