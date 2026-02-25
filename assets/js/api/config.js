@@ -1,16 +1,16 @@
 export var pythonURI;
 if (location.hostname === "localhost") {
-        pythonURI = "http://localhost:8888";
+        pythonURI = "http://localhost:8288";
 } else if (location.hostname === "127.0.0.1") {
-        pythonURI = "http://127.0.0.1:8888";
+        pythonURI = "http://127.0.0.1:8288";
 } else {
         pythonURI = "https://autonomous.opencodingsociety.com/";
 }
 export var javaURI;
 if (location.hostname === "localhost") {
-        javaURI = "http://localhost:8888";
+        javaURI = "http://localhost:8288";
 } else if (location.hostname === "127.0.0.1") {
-        javaURI = "http://127.0.0.1:8888"; //rey
+        javaURI = "http://127.0.0.1:8288"; //rey
 } else {
         javaURI = "https://autonomous.opencodingsociety.com/";
 }
