@@ -57,14 +57,124 @@ menu: nav/home.html
             </div>
           </div>
 
-          <!-- Food Name -->
+          <!-- Food Name Dropdown -->
           <div class="mb-5">
-            <label for="food-name" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+            <label for="food-name-select" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Food Name <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="food-name" placeholder="e.g. Canned Tomato Soup, Fresh Bread"
-              class="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" required>
+            <select id="food-name-select"
+              class="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all" required>
+              <option value="">Select a food item</option>
+              <!-- Canned Goods -->
+              <optgroup label="🥫 Canned Goods">
+                <option value="Canned Tomato Soup">Canned Tomato Soup</option>
+                <option value="Canned Chicken Soup">Canned Chicken Soup</option>
+                <option value="Canned Vegetables">Canned Vegetables</option>
+                <option value="Canned Beans">Canned Beans</option>
+                <option value="Canned Tuna">Canned Tuna</option>
+                <option value="Canned Fruit">Canned Fruit</option>
+                <option value="Canned Corn">Canned Corn</option>
+                <option value="Canned Chili">Canned Chili</option>
+              </optgroup>
+              <!-- Fresh Produce -->
+              <optgroup label="🥬 Fresh Produce">
+                <option value="Fresh Apples">Fresh Apples</option>
+                <option value="Fresh Bananas">Fresh Bananas</option>
+                <option value="Fresh Oranges">Fresh Oranges</option>
+                <option value="Fresh Carrots">Fresh Carrots</option>
+                <option value="Fresh Potatoes">Fresh Potatoes</option>
+                <option value="Fresh Tomatoes">Fresh Tomatoes</option>
+                <option value="Mixed Salad Greens">Mixed Salad Greens</option>
+                <option value="Fresh Onions">Fresh Onions</option>
+              </optgroup>
+              <!-- Dairy -->
+              <optgroup label="🧀 Dairy">
+                <option value="Whole Milk">Whole Milk</option>
+                <option value="Cheddar Cheese">Cheddar Cheese</option>
+                <option value="Yogurt">Yogurt</option>
+                <option value="Butter">Butter</option>
+                <option value="Eggs">Eggs</option>
+                <option value="Cream Cheese">Cream Cheese</option>
+              </optgroup>
+              <!-- Bakery -->
+              <optgroup label="🍞 Bakery / Bread">
+                <option value="White Bread">White Bread</option>
+                <option value="Whole Wheat Bread">Whole Wheat Bread</option>
+                <option value="Bagels">Bagels</option>
+                <option value="Tortillas">Tortillas</option>
+                <option value="Dinner Rolls">Dinner Rolls</option>
+                <option value="Muffins">Muffins</option>
+              </optgroup>
+              <!-- Meat / Protein -->
+              <optgroup label="🥩 Meat / Protein">
+                <option value="Chicken Breast">Chicken Breast</option>
+                <option value="Ground Beef">Ground Beef</option>
+                <option value="Turkey Deli Meat">Turkey Deli Meat</option>
+                <option value="Tofu">Tofu</option>
+                <option value="Peanut Butter">Peanut Butter</option>
+                <option value="Dried Lentils">Dried Lentils</option>
+              </optgroup>
+              <!-- Grains -->
+              <optgroup label="🌾 Grains / Pasta / Rice">
+                <option value="White Rice">White Rice</option>
+                <option value="Brown Rice">Brown Rice</option>
+                <option value="Spaghetti Pasta">Spaghetti Pasta</option>
+                <option value="Macaroni">Macaroni</option>
+                <option value="Oatmeal">Oatmeal</option>
+                <option value="Cereal">Cereal</option>
+              </optgroup>
+              <!-- Beverages -->
+              <optgroup label="🥤 Beverages">
+                <option value="Bottled Water">Bottled Water</option>
+                <option value="Orange Juice">Orange Juice</option>
+                <option value="Apple Juice">Apple Juice</option>
+                <option value="Shelf-Stable Milk">Shelf-Stable Milk</option>
+              </optgroup>
+              <!-- Frozen Foods -->
+              <optgroup label="❄️ Frozen Foods">
+                <option value="Frozen Vegetables">Frozen Vegetables</option>
+                <option value="Frozen Pizza">Frozen Pizza</option>
+                <option value="Frozen Chicken Nuggets">Frozen Chicken Nuggets</option>
+                <option value="Frozen Fruit">Frozen Fruit</option>
+                <option value="Ice Cream">Ice Cream</option>
+              </optgroup>
+              <!-- Snacks -->
+              <optgroup label="🍪 Snacks">
+                <option value="Granola Bars">Granola Bars</option>
+                <option value="Crackers">Crackers</option>
+                <option value="Trail Mix">Trail Mix</option>
+                <option value="Chips">Chips</option>
+                <option value="Cookies">Cookies</option>
+              </optgroup>
+              <!-- Baby Food -->
+              <optgroup label="🍼 Baby Food">
+                <option value="Baby Formula">Baby Formula</option>
+                <option value="Baby Cereal">Baby Cereal</option>
+                <option value="Baby Food Pouches">Baby Food Pouches</option>
+              </optgroup>
+              <!-- Prepared Meals -->
+              <optgroup label="🍱 Prepared Meals">
+                <option value="Boxed Mac & Cheese">Boxed Mac & Cheese</option>
+                <option value="Instant Ramen">Instant Ramen</option>
+                <option value="Microwavable Meals">Microwavable Meals</option>
+                <option value="Canned Ravioli">Canned Ravioli</option>
+              </optgroup>
+              <!-- Other -->
+              <option value="other">📝 Other (type your own)</option>
+            </select>
           </div>
+
+          <!-- Custom Food Name (shown when "Other" selected) -->
+          <div id="custom-food-name-group" class="mb-5 hidden">
+            <label for="food-name-custom" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              Custom Food Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="food-name-custom" placeholder="Type your food item name..."
+              class="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+          </div>
+
+          <!-- Hidden input that holds the final food name value -->
+          <input type="hidden" id="food-name" value="">
 
           <!-- Category -->
           <div class="mb-5">
@@ -400,8 +510,158 @@ menu: nav/home.html
   </div>
 </div>
 
+<!-- Auto-fill Toast -->
+<div id="autofill-toast" class="fixed bottom-6 right-6 z-50 hidden">
+  <div class="flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-2xl shadow-large animate-slide-up">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+    <span id="autofill-toast-msg">Auto-filled fields</span>
+  </div>
+</div>
+
 <script type="module">
   import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+
+  // ---------- FOOD PRESETS: auto-fill category, storage, allergens, dietary ----------
+  const foodPresets = {
+    // Canned Goods
+    'Canned Tomato Soup':      { category: 'canned', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegetarian'] },
+    'Canned Chicken Soup':     { category: 'canned', storage: 'room-temp', allergens: ['gluten'], dietary: [] },
+    'Canned Vegetables':       { category: 'canned', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Canned Beans':            { category: 'canned', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Canned Tuna':             { category: 'canned', storage: 'room-temp', allergens: ['fish'], dietary: ['gluten-free'] },
+    'Canned Fruit':            { category: 'canned', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Canned Corn':             { category: 'canned', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Canned Chili':            { category: 'canned', storage: 'room-temp', allergens: [], dietary: ['gluten-free'] },
+    // Fresh Produce
+    'Fresh Apples':            { category: 'fresh-produce', storage: 'cool-dry', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free', 'organic'] },
+    'Fresh Bananas':           { category: 'fresh-produce', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Fresh Oranges':           { category: 'fresh-produce', storage: 'cool-dry', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Fresh Carrots':           { category: 'fresh-produce', storage: 'refrigerated', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Fresh Potatoes':          { category: 'fresh-produce', storage: 'cool-dry', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Fresh Tomatoes':          { category: 'fresh-produce', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Mixed Salad Greens':      { category: 'fresh-produce', storage: 'refrigerated', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Fresh Onions':            { category: 'fresh-produce', storage: 'cool-dry', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    // Dairy
+    'Whole Milk':              { category: 'dairy', storage: 'refrigerated', allergens: ['dairy'], dietary: ['vegetarian', 'gluten-free'] },
+    'Cheddar Cheese':          { category: 'dairy', storage: 'refrigerated', allergens: ['dairy'], dietary: ['vegetarian', 'gluten-free'] },
+    'Yogurt':                  { category: 'dairy', storage: 'refrigerated', allergens: ['dairy'], dietary: ['vegetarian', 'gluten-free'] },
+    'Butter':                  { category: 'dairy', storage: 'refrigerated', allergens: ['dairy'], dietary: ['vegetarian', 'gluten-free'] },
+    'Eggs':                    { category: 'dairy', storage: 'refrigerated', allergens: ['eggs'], dietary: ['vegetarian', 'gluten-free'] },
+    'Cream Cheese':            { category: 'dairy', storage: 'refrigerated', allergens: ['dairy'], dietary: ['vegetarian', 'gluten-free'] },
+    // Bakery
+    'White Bread':             { category: 'bakery', storage: 'room-temp', allergens: ['gluten', 'soy'], dietary: ['vegetarian'] },
+    'Whole Wheat Bread':       { category: 'bakery', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegetarian'] },
+    'Bagels':                  { category: 'bakery', storage: 'room-temp', allergens: ['gluten', 'eggs'], dietary: ['vegetarian'] },
+    'Tortillas':               { category: 'bakery', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegetarian', 'vegan'] },
+    'Dinner Rolls':            { category: 'bakery', storage: 'room-temp', allergens: ['gluten', 'dairy', 'eggs'], dietary: ['vegetarian'] },
+    'Muffins':                 { category: 'bakery', storage: 'room-temp', allergens: ['gluten', 'dairy', 'eggs'], dietary: ['vegetarian'] },
+    // Meat / Protein
+    'Chicken Breast':          { category: 'meat-protein', storage: 'refrigerated', allergens: [], dietary: ['gluten-free', 'halal'] },
+    'Ground Beef':             { category: 'meat-protein', storage: 'refrigerated', allergens: [], dietary: ['gluten-free'] },
+    'Turkey Deli Meat':        { category: 'meat-protein', storage: 'refrigerated', allergens: [], dietary: ['gluten-free'] },
+    'Tofu':                    { category: 'meat-protein', storage: 'refrigerated', allergens: ['soy'], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Peanut Butter':           { category: 'meat-protein', storage: 'room-temp', allergens: ['nuts'], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Dried Lentils':           { category: 'meat-protein', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    // Grains
+    'White Rice':              { category: 'grains', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Brown Rice':              { category: 'grains', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Spaghetti Pasta':         { category: 'grains', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegan', 'vegetarian'] },
+    'Macaroni':                { category: 'grains', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegan', 'vegetarian'] },
+    'Oatmeal':                 { category: 'grains', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegan', 'vegetarian'] },
+    'Cereal':                  { category: 'grains', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegetarian'] },
+    // Beverages
+    'Bottled Water':           { category: 'beverages', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Orange Juice':            { category: 'beverages', storage: 'refrigerated', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Apple Juice':             { category: 'beverages', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Shelf-Stable Milk':       { category: 'beverages', storage: 'room-temp', allergens: ['dairy'], dietary: ['vegetarian', 'gluten-free'] },
+    // Frozen Foods
+    'Frozen Vegetables':       { category: 'frozen', storage: 'frozen', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Frozen Pizza':            { category: 'frozen', storage: 'frozen', allergens: ['gluten', 'dairy'], dietary: ['vegetarian'] },
+    'Frozen Chicken Nuggets':  { category: 'frozen', storage: 'frozen', allergens: ['gluten'], dietary: [] },
+    'Frozen Fruit':            { category: 'frozen', storage: 'frozen', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Ice Cream':               { category: 'frozen', storage: 'frozen', allergens: ['dairy', 'eggs'], dietary: ['vegetarian', 'gluten-free'] },
+    // Snacks
+    'Granola Bars':            { category: 'snacks', storage: 'room-temp', allergens: ['gluten', 'nuts'], dietary: ['vegetarian'] },
+    'Crackers':                { category: 'snacks', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegetarian'] },
+    'Trail Mix':               { category: 'snacks', storage: 'room-temp', allergens: ['nuts'], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Chips':                   { category: 'snacks', storage: 'room-temp', allergens: [], dietary: ['vegan', 'vegetarian', 'gluten-free'] },
+    'Cookies':                 { category: 'snacks', storage: 'room-temp', allergens: ['gluten', 'dairy', 'eggs'], dietary: ['vegetarian'] },
+    // Baby Food
+    'Baby Formula':            { category: 'baby-food', storage: 'room-temp', allergens: ['dairy', 'soy'], dietary: [] },
+    'Baby Cereal':             { category: 'baby-food', storage: 'room-temp', allergens: [], dietary: ['vegetarian'] },
+    'Baby Food Pouches':       { category: 'baby-food', storage: 'room-temp', allergens: [], dietary: ['vegetarian'] },
+    // Prepared Meals
+    'Boxed Mac & Cheese':      { category: 'prepared-meals', storage: 'room-temp', allergens: ['gluten', 'dairy'], dietary: ['vegetarian'] },
+    'Instant Ramen':           { category: 'prepared-meals', storage: 'room-temp', allergens: ['gluten', 'soy'], dietary: ['vegetarian'] },
+    'Microwavable Meals':      { category: 'prepared-meals', storage: 'frozen', allergens: ['gluten'], dietary: [] },
+    'Canned Ravioli':          { category: 'prepared-meals', storage: 'room-temp', allergens: ['gluten', 'dairy'], dietary: ['vegetarian'] },
+  };
+
+  // Apply preset auto-fill or clear for "other"
+  function applyFoodPreset(foodName) {
+    const preset = foodPresets[foodName];
+    const isOther = (foodName === 'other' || !preset);
+    const customGroup = document.getElementById('custom-food-name-group');
+    const customInput = document.getElementById('food-name-custom');
+    const hiddenInput = document.getElementById('food-name');
+
+    if (foodName === 'other') {
+      // Show custom input, clear all auto-fill fields
+      customGroup.classList.remove('hidden');
+      customInput.required = true;
+      customInput.focus();
+      hiddenInput.value = '';
+      clearAutoFillFields();
+    } else if (preset) {
+      // Hide custom input, set hidden food name, auto-fill fields
+      customGroup.classList.add('hidden');
+      customInput.required = false;
+      customInput.value = '';
+      hiddenInput.value = foodName;
+      // Category
+      document.getElementById('food-category').value = preset.category;
+      // Storage
+      document.getElementById('storage-type').value = preset.storage;
+      // Allergens — uncheck all, then check matching
+      document.querySelectorAll('input[name="allergens"]').forEach(cb => { cb.checked = false; });
+      if (preset.allergens.length === 0) {
+        const noneCb = document.querySelector('input[name="allergens"][value="none"]');
+        if (noneCb) noneCb.checked = true;
+      } else {
+        preset.allergens.forEach(a => {
+          const cb = document.querySelector(`input[name="allergens"][value="${a}"]`);
+          if (cb) cb.checked = true;
+        });
+      }
+      // Dietary tags — uncheck all, then check matching
+      document.querySelectorAll('input[name="dietary"]').forEach(cb => { cb.checked = false; });
+      preset.dietary.forEach(d => {
+        const cb = document.querySelector(`input[name="dietary"][value="${d}"]`);
+        if (cb) cb.checked = true;
+      });
+      // Flash a brief confirmation
+      showAutoFillToast(foodName);
+    } else {
+      customGroup.classList.add('hidden');
+      hiddenInput.value = '';
+    }
+  }
+
+  function clearAutoFillFields() {
+    document.getElementById('food-category').value = '';
+    document.getElementById('storage-type').value = '';
+    document.querySelectorAll('input[name="allergens"]').forEach(cb => { cb.checked = false; });
+    document.querySelectorAll('input[name="dietary"]').forEach(cb => { cb.checked = false; });
+  }
+
+  function showAutoFillToast(foodName) {
+    const toast = document.getElementById('autofill-toast');
+    document.getElementById('autofill-toast-msg').textContent = `Auto-filled fields for "${foodName}"`;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2500);
+  }
 
   // ---------- STEP NAVIGATION ----------
   let currentStep = 1;
@@ -445,8 +705,24 @@ menu: nav/home.html
         input.addEventListener('input', () => {
           input.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
         }, { once: true });
+        input.addEventListener('change', () => {
+          input.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
+        }, { once: true });
       }
     });
+    // Extra check: ensure food-name hidden input has a value on step 1
+    if (step === 1) {
+      const foodName = document.getElementById('food-name').value.trim();
+      if (!foodName) {
+        const sel = document.getElementById('food-name-select');
+        const custom = document.getElementById('food-name-custom');
+        const target = sel.value === 'other' ? custom : sel;
+        target.classList.add('ring-2', 'ring-red-500', 'border-red-500');
+        target.addEventListener('input', () => target.classList.remove('ring-2', 'ring-red-500', 'border-red-500'), { once: true });
+        target.addEventListener('change', () => target.classList.remove('ring-2', 'ring-red-500', 'border-red-500'), { once: true });
+        valid = false;
+      }
+    }
     if (!valid) showError('Please fill in all required fields.');
     return valid;
   }
@@ -489,6 +765,16 @@ menu: nav/home.html
     // Set min date for expiry to today
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('food-expiry').setAttribute('min', today);
+
+    // Food name dropdown -> auto-fill
+    document.getElementById('food-name-select').addEventListener('change', function() {
+      applyFoodPreset(this.value);
+    });
+
+    // Custom food name input -> sync to hidden input
+    document.getElementById('food-name-custom').addEventListener('input', function() {
+      document.getElementById('food-name').value = this.value.trim();
+    });
 
     try {
       const res = await fetch(`${pythonURI}/api/user`, fetchOptions);

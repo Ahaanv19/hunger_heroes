@@ -341,3 +341,42 @@
 // The barcode print window styles must remain inline in the
 // JavaScript because they are injected into a new window
 // document that does not load our SASS stylesheets.
+
+// ---------------------------------------------------------
+// 9. FOOD DROPDOWN & AUTO-FILL (Create Page)
+// ---------------------------------------------------------
+#food-name-select {
+  optgroup {
+    font-weight: 700;
+    color: $token-neutral-700;
+    padding: 0.25rem 0;
+  }
+
+  option {
+    font-weight: 400;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+.dark #food-name-select {
+  optgroup {
+    color: $token-neutral-300;
+    background: $token-neutral-800;
+  }
+
+  option {
+    background: $token-neutral-800;
+  }
+}
+
+// Autofill toast animation
+#autofill-toast .animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+// Subtle highlight pulse on auto-filled fields
+@keyframes autofill-highlight {
+  0%   { box-shadow: 0 0 0 0 rgba($token-primary-500, 0.4); }
+  70%  { box-shadow: 0 0 0 6px rgba($token-primary-500, 0); }
+  100% { box-shadow: 0 0 0 0 rgba($token-primary-500, 0); }
+}
