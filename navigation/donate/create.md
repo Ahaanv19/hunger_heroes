@@ -19,7 +19,7 @@ menu: nav/home.html
 
     <!-- Header -->
     <div class="text-center mb-10">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg mb-4">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-primary-500 shadow-md mb-4">
         <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
         </svg>
@@ -35,19 +35,19 @@ menu: nav/home.html
         <span id="step-percent" class="text-sm font-medium text-slate-500 dark:text-slate-400">33%</span>
       </div>
       <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-        <div id="progress-bar" class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-500 ease-out" style="width: 33%"></div>
+        <div id="progress-bar" class="h-full bg-primary-500 rounded-full transition-all duration-500 ease-out" style="width: 33%"></div>
       </div>
     </div>
 
     <!-- Form Card -->
-    <div class="glass rounded-3xl shadow-large p-6 sm:p-8 border border-slate-200/50 dark:border-slate-700/50">
+    <div class="rounded-lg shadow-md p-6 sm:p-8 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
       <form id="donation-form" novalidate>
 
         <!-- ==================== STEP 1: FOOD DETAILS ==================== -->
         <div id="step-1" class="donation-step">
           <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+              <svg class="w-5 h-5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
             </div>
@@ -239,7 +239,7 @@ menu: nav/home.html
 
           <div class="flex justify-end pt-4">
             <button type="button" onclick="nextStep(2)"
-              class="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all">
+              class="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all">
               Continue
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -251,8 +251,8 @@ menu: nav/home.html
         <!-- ==================== STEP 2: SAFETY & HANDLING ==================== -->
         <div id="step-2" class="donation-step hidden">
           <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+              <svg class="w-5 h-5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
               </svg>
             </div>
@@ -397,7 +397,7 @@ menu: nav/home.html
               Back
             </button>
             <button type="button" onclick="nextStep(3)"
-              class="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all">
+              class="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all">
               Continue
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -487,7 +487,7 @@ menu: nav/home.html
               Back
             </button>
             <button type="button" onclick="submitDonation()"
-              class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all">
+              class="inline-flex items-center gap-2 px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all\">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
               </svg>
@@ -502,7 +502,7 @@ menu: nav/home.html
 
 <!-- Error Toast -->
 <div id="error-toast" class="fixed bottom-6 right-6 z-50 hidden">
-  <div class="flex items-center gap-3 px-5 py-4 bg-red-600 text-white rounded-2xl shadow-large animate-slide-up">
+  <div class="flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-lg shadow-lg animate-slide-up">
     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
     </svg>
@@ -512,7 +512,7 @@ menu: nav/home.html
 
 <!-- Auto-fill Toast -->
 <div id="autofill-toast" class="fixed bottom-6 right-6 z-50 hidden">
-  <div class="flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-2xl shadow-large animate-slide-up">
+  <div class="flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-lg shadow-lg animate-slide-up">
     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
     </svg>

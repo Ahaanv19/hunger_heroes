@@ -22,7 +22,7 @@ menu: nav/home.html
 
     <!-- Header -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-600 shadow-lg mb-4">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-secondary-500 shadow-md mb-4">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
         </svg>
@@ -32,9 +32,9 @@ menu: nav/home.html
     </div>
 
     <!-- Tab Buttons -->
-    <div class="flex bg-slate-100 dark:bg-slate-800 rounded-2xl p-1.5 mb-6">
+    <div class="flex bg-slate-100 dark:bg-slate-700 rounded-lg p-1 mb-6">
       <button onclick="switchTab('camera')" id="tab-camera"
-        class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm">
+        class="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
           <circle cx="12" cy="13" r="3"/>
@@ -52,7 +52,7 @@ menu: nav/home.html
 
     <!-- Camera Panel -->
     <div id="panel-camera" class="space-y-4">
-      <div class="bg-white dark:bg-slate-800/80 rounded-3xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div id="qr-reader" class="w-full" style="min-height: 300px;"></div>
         <div class="p-4 text-center">
           <p id="camera-status" class="text-sm text-slate-400">Initializing camera…</p>
@@ -62,13 +62,13 @@ menu: nav/home.html
 
     <!-- Manual Panel -->
     <div id="panel-manual" class="hidden space-y-4">
-      <div class="bg-white dark:bg-slate-800/80 rounded-3xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 p-6">
         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Donation ID</label>
         <div class="flex gap-3">
           <input type="text" id="manual-id" placeholder="HH-XXXXXX-XXXX"
-            class="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-mono text-lg tracking-wider">
+            class="flex-1 px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 font-mono text-lg tracking-wider">
           <button onclick="lookupById()"
-            class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-medium hover:shadow-large transition-all whitespace-nowrap">
+            class="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all whitespace-nowrap">
             Look Up
           </button>
         </div>
@@ -82,13 +82,13 @@ menu: nav/home.html
     <div id="result-panel" class="hidden mt-6 space-y-4">
 
       <!-- Status Timeline -->
-      <div class="bg-white dark:bg-slate-800/80 rounded-3xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 p-6">
         <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Status Timeline</h3>
         <div id="status-timeline" class="flex items-center justify-between gap-1"></div>
       </div>
 
       <!-- Donation Info Card -->
-      <div class="bg-white dark:bg-slate-800/80 rounded-3xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Donation Details</h3>
           <span id="result-status" class="px-3 py-1 rounded-full text-xs font-bold"></span>
@@ -103,7 +103,7 @@ menu: nav/home.html
           </div>
           <div class="grid grid-cols-2 gap-3 text-sm" id="result-grid"></div>
           <div id="result-allergens" class="hidden">
-            <p class="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider mb-1">⚠️ Allergens</p>
+            <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">⚠️ Allergens</p>
             <p id="result-allergens-list" class="text-sm text-slate-700 dark:text-slate-300"></p>
           </div>
           <div id="result-instructions" class="hidden">
@@ -114,13 +114,13 @@ menu: nav/home.html
       </div>
 
       <!-- Volunteer Assignment Section -->
-      <div id="volunteer-section" class="bg-white dark:bg-slate-800/80 rounded-3xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 p-6 hidden">
+      <div id="volunteer-section" class="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 p-6 hidden">
         <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">🙋 Volunteer Assignment</h3>
 
         <!-- Assigned volunteer info -->
         <div id="volunteer-info" class="hidden">
-          <div class="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm" id="volunteer-avatar"></div>
+          <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+            <div class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-sm" id="volunteer-avatar"></div>
             <div>
               <p class="font-semibold text-slate-900 dark:text-white" id="volunteer-name-display"></p>
               <p class="text-xs text-slate-500 dark:text-slate-400" id="volunteer-since"></p>
@@ -133,9 +133,9 @@ menu: nav/home.html
           <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">No volunteer assigned yet. Claim this donation to deliver it.</p>
           <div class="flex gap-3">
             <input type="text" id="volunteer-name-input" placeholder="Your name"
-              class="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm">
+              class="flex-1 px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm">
             <button onclick="assignVolunteer()"
-              class="px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold text-sm shadow-medium transition-all whitespace-nowrap">
+              class="px-5 py-3 bg-secondary-500 hover:bg-secondary-600 text-white rounded-lg font-semibold text-sm shadow-md transition-all whitespace-nowrap">
               🙋 Volunteer
             </button>
           </div>
@@ -147,7 +147,7 @@ menu: nav/home.html
 
       <!-- Scan Again -->
       <button onclick="resetScanner()"
-        class="w-full py-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors mt-2">
+        class="w-full py-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors mt-2">
         ← Scan Another
       </button>
     </div>
@@ -472,28 +472,28 @@ menu: nav/home.html
     const buttons = [];
 
     if (d.status === 'posted') {
-      buttons.push(`<button onclick="transitionStatus('claimed')" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all flex items-center justify-center gap-2">
+      buttons.push(`<button onclick="transitionStatus('claimed')" class="w-full py-3.5 bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
         Claim This Donation
       </button>`);
     }
 
     if (d.status === 'claimed') {
-      buttons.push(`<button onclick="transitionStatus('in_transit')" class="w-full py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all flex items-center justify-center gap-2">
+      buttons.push(`<button onclick="transitionStatus('in_transit')" class="w-full py-3.5 bg-secondary-500 hover:bg-secondary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
         📦 Mark as In Transit
       </button>`);
     }
 
     if (d.status === 'in_transit') {
-      buttons.push(`<button onclick="transitionStatus('delivered')" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all flex items-center justify-center gap-2">
+      buttons.push(`<button onclick="transitionStatus('delivered')" class="w-full py-3.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
         ✅ Mark as Delivered
       </button>`);
     }
 
     if (d.status === 'delivered') {
-      buttons.push(`<button onclick="transitionStatus('confirmed')" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all flex items-center justify-center gap-2">
+      buttons.push(`<button onclick="transitionStatus('confirmed')" class="w-full py-3.5 bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         🎉 Confirm Delivery
       </button>`);
@@ -502,7 +502,7 @@ menu: nav/home.html
     // View label button (always, if not expired/cancelled)
     if (!['expired','cancelled'].includes(d.status)) {
       buttons.push(`<a href="{{site.baseurl}}/donate/barcode?id=${encodeURIComponent(d.id)}" onclick="sessionStorage.setItem('hh_current_donation', JSON.stringify(currentDonation))"
-        class="block w-full py-3 text-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+        class="block w-full py-3 text-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
         🏷️ View Label
       </a>`);
     }

@@ -19,7 +19,7 @@ menu: nav/home.html
 
     <!-- SUCCESS HEADER -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 shadow-lg mb-4 animate-scale-in">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-primary-500 shadow-md mb-4 animate-scale-in">
         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
         </svg>
@@ -30,20 +30,20 @@ menu: nav/home.html
 
     <!-- ==================== PRINTABLE LABEL ==================== -->
     <div id="barcode-label-container">
-      <div id="barcode-label" class="bg-white rounded-3xl shadow-large border-2 border-slate-200 p-0 overflow-hidden">
+      <div id="barcode-label" class="bg-white rounded-lg shadow-lg border border-slate-200 p-0 overflow-hidden">
         
         <!-- Label Header -->
-        <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4 text-white">
+        <div class="bg-primary-500 px-6 py-4 text-white">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
+              <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur">
                 <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                 </svg>
               </div>
               <div>
                 <h2 class="text-lg font-bold">HUNGER HEROES</h2>
-                <p class="text-green-100 text-xs font-medium">FOOD DONATION LABEL</p>
+                <p class=\"text-white/80 text-xs font-medium\">FOOD DONATION LABEL</p>
               </div>
             </div>
             <div class="text-right">
@@ -59,8 +59,8 @@ menu: nav/home.html
             <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Food Item</p>
             <p id="label-food-name" class="text-2xl font-bold text-slate-900">---</p>
             <div class="flex items-center gap-3 mt-2">
-              <span id="label-category" class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">---</span>
-              <span id="label-quantity" class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">---</span>
+              <span id="label-category" class="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">---</span>
+              <span id="label-quantity" class="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">---</span>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ menu: nav/home.html
           <div class="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-slate-200">
             <div>
               <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Expires</p>
-              <p id="label-expiry" class="text-base font-bold text-red-600">---</p>
+              <p id="label-expiry" class="text-base font-bold text-slate-700">---</p>
             </div>
             <div>
               <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Storage</p>
@@ -113,7 +113,7 @@ menu: nav/home.html
               <svg id="barcode-svg"></svg>
             </div>
             <!-- QR Code -->
-            <div id="qr-code" class="mb-3 p-3 bg-white rounded-2xl shadow-soft border border-slate-100"></div>
+            <div id="qr-code" class="mb-3 p-3 bg-white rounded-lg shadow-sm border border-slate-100"></div>
             <p class="text-xs text-slate-400 font-medium">Scan barcode or QR code to verify donation details</p>
           </div>
         </div>
@@ -130,21 +130,21 @@ menu: nav/home.html
     <!-- ACTION BUTTONS -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
       <button onclick="printLabel()" 
-        class="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all w-full sm:w-auto justify-center">
+        class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all w-full sm:w-auto justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
         </svg>
         Print Label
       </button>
       <button onclick="downloadLabel()" 
-        class="inline-flex items-center gap-2 px-8 py-3.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-primary-500 hover:text-primary-600 rounded-xl font-semibold text-sm transition-all w-full sm:w-auto justify-center">
+        class="inline-flex items-center gap-2 px-8 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-primary-500 hover:text-primary-600 rounded-lg font-semibold text-sm transition-all w-full sm:w-auto justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
         </svg>
         Download as Image
       </button>
       <a href="{{site.baseurl}}/donate/scan" 
-        class="inline-flex items-center gap-2 px-8 py-3.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-xl font-semibold text-sm transition-all w-full sm:w-auto justify-center">
+        class="inline-flex items-center gap-2 px-8 py-3.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg font-semibold text-sm transition-all w-full sm:w-auto justify-center">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
         </svg>
@@ -153,14 +153,14 @@ menu: nav/home.html
     </div>
 
     <!-- Info -->
-    <div class="mt-10 p-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl">
+    <div class="mt-10 p-5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
       <div class="flex gap-3">
-        <svg class="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-slate-600 dark:text-slate-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <div>
-          <h3 class="font-semibold text-blue-900 dark:text-blue-300 mb-1">How to use this label</h3>
-          <ol class="text-sm text-blue-700 dark:text-blue-400 space-y-1 list-decimal list-inside">
+          <h3 class="font-semibold text-slate-900 dark:text-white mb-1">How to use this label</h3>
+          <ol class="text-sm text-slate-700 dark:text-slate-300 space-y-1 list-decimal list-inside">
             <li>Print this label or save as an image</li>
             <li>Cut along the edges and attach to your food package</li>
             <li>When the food arrives, the receiver scans the QR code</li>
