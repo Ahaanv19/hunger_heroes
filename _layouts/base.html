@@ -14,46 +14,47 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
-            display: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif'],
+            sans: ['Inter', 'Roboto', 'ui-sans-serif', 'system-ui'],
+            display: ['Playfair Display', 'Merriweather', 'ui-serif', 'Georgia'],
+            serif: ['Merriweather', 'ui-serif', 'Georgia'],
           },
           colors: {
-            // San Diego inspired color palette
+            // Professional color palette
             primary: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
-              300: '#93c5fd',
-              400: '#60a5fa',
-              500: '#0066cc', // San Diego Blue
-              600: '#0052a3',
-              700: '#004080',
-              800: '#003366',
-              900: '#002244',
+              50: '#f0faf5',
+              100: '#dceee7',
+              200: '#b8dccf',
+              300: '#75b8a3',
+              400: '#409678',
+              500: '#1B5E20', // Deep Forest Green
+              600: '#1a5420',
+              700: '#155020',
+              800: '#0d3817',
+              900: '#051f0d',
             },
             secondary: {
-              50: '#fdf4ff',
-              100: '#fae8ff',
-              200: '#f5d0fe',
-              300: '#f0abfc',
-              400: '#e879f9',
-              500: '#d946ef',
-              600: '#c026d3',
-              700: '#a21caf',
-              800: '#86198f',
-              900: '#701a75',
+              50: '#f8fafb',
+              100: '#eef1f3',
+              200: '#dde4e8',
+              300: '#c5cfd6',
+              400: '#9ba8b3',
+              500: '#455A64', // Slate Gray
+              600: '#3d505b',
+              700: '#354752',
+              800: '#2e3f49',
+              900: '#1a2732',
             },
             accent: {
-              50: '#ecfeff',
-              100: '#cffafe',
-              200: '#a5f3fc',
-              300: '#67e8f9',
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0891b2',
-              700: '#0e7490',
-              800: '#155e75',
-              900: '#164e63',
+              50: '#fafafa',
+              100: '#f5f5f5',
+              200: '#e0e0e0',
+              300: '#d0d0d0',
+              400: '#a8a8a8',
+              500: '#757575',
+              600: '#616161',
+              700: '#424242',
+              800: '#212121', // Charcoal
+              900: '#121212',
             },
             success: '#10b981',
             warning: '#f59e0b',
@@ -126,7 +127,7 @@
   <!-- Fonts & Scripts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <!-- Chart.js for Analytics -->
@@ -155,44 +156,43 @@
 </head>
 
 <body
-  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-cyan-50/20 dark:from-darkbg dark:via-slate-900 dark:to-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased">
+  class="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased">
 
-  <!-- Decorative Background Elements -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+  <!-- Decorative Background Elements (removed for professional design) -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 hidden">
     <div class="floating-shape w-96 h-96 bg-primary-500 top-20 -left-48" style="animation-delay: 0s;"></div>
     <div class="floating-shape w-80 h-80 bg-accent-500 top-1/3 -right-40" style="animation-delay: -2s;"></div>
     <div class="floating-shape w-64 h-64 bg-secondary-500 bottom-20 left-1/4" style="animation-delay: -4s;"></div>
   </div>
 
   <!-- Navbar -->
-  <header class="sticky top-0 z-50 glass shadow-soft">
+  <header class="sticky top-0 z-50 glass shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 lg:h-20">
         <!-- Logo Section -->
         <a href="{{site.baseurl}}/" class="flex items-center gap-3 group">
-          <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
+          <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-primary-500 flex items-center justify-center shadow-sm border border-primary-600">
             <svg class="w-6 h-6 lg:w-7 lg:h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
           </div>
           <div class="hidden sm:block">
-            <span class="text-xl lg:text-2xl font-bold gradient-text">Hunger Heroes</span>
-            <span class="block text-xs text-slate-500 dark:text-slate-400 font-medium -mt-1">City of San Diego</span>
+            <span class="text-xl lg:text-2xl font-bold text-primary-500">Hunger Heroes</span>
           </div>
         </a>
 
         <!-- Desktop Nav -->
         <nav class="hidden lg:flex items-center gap-1">
           {% for page in site.header_pages %}
-          <a href="{{ page | relative_url }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
+          <a href="{{ page | relative_url }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
             {{ page | split: "/" | last | split: "." | first | capitalize }}
           </a>
           {% endfor %}
           
           <!-- Donate CTA -->
-          <a href="{{site.baseurl}}/donate/" class="nav-link px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-500 dark:hover:text-green-300 rounded-lg transition-colors flex items-center gap-1">
+          <a href="{{site.baseurl}}/donate/" class="nav-link px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 rounded-lg transition-colors flex items-center gap-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Donate
           </a>
@@ -217,7 +217,7 @@
         <div class="flex items-center gap-3 flex-shrink-0">
           <!-- Sign In Button -->
           <a href="{{site.baseurl}}/login"
-            class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 btn-primary text-white rounded-xl font-semibold text-sm shadow-medium whitespace-nowrap"
+            class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-sm border border-primary-600 transition-all whitespace-nowrap"
             id="sign-in-btn">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -227,7 +227,7 @@
 
           <!-- Logout Button -->
           <a href="{{site.baseurl}}/logout"
-            class="hidden md:inline-flex items-center gap-2 px-4 py-2.5 text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-medium text-sm transition-all">
+            class="hidden md:inline-flex items-center gap-2 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium text-sm transition-all border border-slate-200 dark:border-slate-700">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -326,7 +326,7 @@
               </svg>
             </button>
             <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" @click.outside="open = false"
-              class="absolute right-0 top-14 w-56 glass rounded-2xl shadow-large p-3 space-y-1">
+              class="absolute right-0 top-14 w-56 glass rounded-lg shadow-lg p-3 space-y-1">
               {% for page in site.header_pages %}
               <a href="{{ page | relative_url }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all">
                 {{ page | split: "/" | last | split: "." | first | capitalize }}
@@ -359,60 +359,51 @@
   </main>
 
   <!-- Footer -->
-  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Quick Links -->
+        <div>
+          <ul class="space-y-3">
+            <li><a href="{{site.baseurl}}/donate/create" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">Donate Food</a></li>
+            <li><a href="{{site.baseurl}}/donate/scan" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">Scan Label</a></li>
+            <li><a href="{{site.baseurl}}/donate/history" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">My Donations</a></li>
+            <li><a href="{{site.baseurl}}/about" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">About Us</a></li>
+          </ul>
+        </div>
+
+        <!-- Footer Links -->
+        <div>
+          <ul class="space-y-3">
+            <li><a href="{{site.baseurl}}/contact" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">Contact Us</a></li>
+            <li><a href="{{site.baseurl}}/partners" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">Partner as an Organization</a></li>
+            <li><a href="{{site.baseurl}}/complaint" class="text-sm text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">File a Complaint</a></li>
+          </ul>
+        </div>
+
         <!-- Brand Section -->
         <div class="space-y-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center">
+            <div class="w-10 h-10 rounded-lg bg-primary-500 flex items-center justify-center shadow-sm border border-primary-600">
               <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
             </div>
-            <span class="text-xl font-bold gradient-text">Hunger Heroes</span>
+            <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Hunger Heroes</span>
           </div>
-          <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-            Hunger Heroes is dedicated to combating food insecurity in the City of San Diego. We strive to ensure that everyone has access to nutritious food.
+          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            Fighting food insecurity in San Diego, we strive to ensure that everyone has access to nutritious food.
           </p>
         </div>
 
-        <!-- Quick Links -->
-        <div>
-          <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4">Quick Links</h4>
-          <ul class="space-y-3">
-            <li><a href="{{site.baseurl}}/donate/create" class="text-sm text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">Donate Food</a></li>
-            <li><a href="{{site.baseurl}}/donate/scan" class="text-sm text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">Scan Label</a></li>
-            <li><a href="{{site.baseurl}}/donate/history" class="text-sm text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">My Donations</a></li>
-            <li><a href="{{site.baseurl}}/about" class="text-sm text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors">About Us</a></li>
-          </ul>
-        </div>
-
-        <!-- Contact -->
-        <div>
-          <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4">City of San Diego</h4>
-          <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-            An initiative designed to support local communities.
-          </p>
-          <div class="flex gap-3 mt-4">
-            <a href="#" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/></svg>
-            </a>
-          </div>
-        </div>
       </div>
 
       <!-- Bottom Bar -->
-      <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p class="text-sm text-slate-500 dark:text-slate-400">
-          © 2026 Hunger Heroes. Built by <span class="font-medium text-primary-600 dark:text-primary-400">Ahaan & Team</span>
+      <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-sm text-slate-600 dark:text-slate-400">
+          © 2026 Hunger Heroes. Fighting food waste, feeding hope in San Diego.
         </p>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
-            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            All Systems Operational
-          </span>
-        </div>
       </div>
     </div>
   </footer>

@@ -15,7 +15,6 @@ menu: nav/home.html
 {% include home/impact.html %}
 {% include home/testimonials.html %}
 {% include home/cta.html %}
-{% include home/footer-links.html %}
 
 <!-- Scripts -->
 <script src="{{site.baseurl}}/assets/js/home/slider.js"></script>

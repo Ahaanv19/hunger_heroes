@@ -8,7 +8,6 @@ menu: nav/home.html
 
 <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
   <div class="max-w-4xl mx-auto">
-
     <!-- Back -->
     <a href="{{site.baseurl}}/donate/" class="inline-flex items-center text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 mb-6 transition-colors group">
       <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,7 +15,6 @@ menu: nav/home.html
       </svg>
       Back to Donate
     </a>
-
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
       <div>
@@ -24,39 +22,37 @@ menu: nav/home.html
         <p class="text-slate-500 dark:text-slate-400 mt-1">Track your food donations and reprint labels</p>
       </div>
       <a href="{{site.baseurl}}/donate/create"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all whitespace-nowrap">
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all whitespace-nowrap">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
         New Donation
       </a>
     </div>
-
     <!-- Filter Tabs -->
     <div class="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-      <button onclick="filterDonations('all')" class="filter-btn active px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="all">
+      <button onclick="filterDonations('all')" class="filter-btn active px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="all">
         All
       </button>
-      <button onclick="filterDonations('posted')" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="posted">
-        � Posted
+      <button onclick="filterDonations('posted')" class="filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="posted">
+        Posted
       </button>
-      <button onclick="filterDonations('claimed')" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="claimed">
-        🤝 Claimed
+      <button onclick="filterDonations('claimed')" class="filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="claimed">
+        Claimed
       </button>
-      <button onclick="filterDonations('in_transit')" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="in_transit">
-        🚚 In Transit
+      <button onclick="filterDonations('in_transit')" class="filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="in_transit">
+        In Transit
       </button>
-      <button onclick="filterDonations('delivered')" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="delivered">
-        📦 Delivered
+      <button onclick="filterDonations('delivered')" class="filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="delivered">
+        Delivered
       </button>
-      <button onclick="filterDonations('confirmed')" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="confirmed">
-        ✅ Confirmed
+      <button onclick="filterDonations('confirmed')" class="filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="confirmed">
+        Confirmed
       </button>
-      <button onclick="filterDonations('expired')" class="filter-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all" data-filter="expired">
-        ⏰ Expired
+      <button onclick="filterDonations('expired')" class="filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all" data-filter="expired">
+        Expired
       </button>
     </div>
-
     <!-- Donations List -->
     <div id="donations-list" class="space-y-4">
       <!-- Loading -->
@@ -65,7 +61,6 @@ menu: nav/home.html
         <p class="text-slate-400">Loading donations...</p>
       </div>
     </div>
-
     <!-- Empty State -->
     <div id="empty-state" class="hidden text-center py-16">
       <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
@@ -75,7 +70,7 @@ menu: nav/home.html
       </div>
       <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Donations Yet</h3>
       <p class="text-slate-500 dark:text-slate-400 mb-6">Create your first food donation and generate a barcode label!</p>
-      <a href="{{site.baseurl}}/donate/create" class="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white rounded-xl font-semibold text-sm">
+      <a href="{{site.baseurl}}/donate/create" class="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white rounded-lg font-semibold text-sm">
         Create Your First Donation
       </a>
     </div>
@@ -134,12 +129,12 @@ menu: nav/home.html
     const status = isExpired && d.status === 'posted' ? 'expired' : (d.status || 'posted');
 
     const map = {
-      'posted':    { badge: '📋 Posted',     color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-      'claimed':   { badge: '🤝 Claimed',    color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-      'in_transit': { badge: '🚚 In Transit', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
-      'delivered': { badge: '📦 Delivered',   color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
-      'confirmed': { badge: '✅ Confirmed',   color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-      'expired':   { badge: '⏰ Expired',     color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }
+      'posted':    { badge: 'Posted',     color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+      'claimed':   { badge: 'Claimed',    color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
+      'in_transit': { badge: 'In Transit', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+      'delivered': { badge: 'Delivered',   color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
+      'confirmed': { badge: 'Confirmed',   color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+      'expired':   { badge: 'Expired',     color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }
     };
     return { ...map[status] || map['posted'], status, daysLeft, isExpired };
   }
@@ -159,7 +154,7 @@ menu: nav/home.html
 
       // Volunteer info
       const volunteerHTML = d.volunteer_name
-        ? `<span class="text-xs text-slate-400">🙋 ${d.volunteer_name}</span>`
+        ? `<span class="text-xs text-slate-400"> ${d.volunteer_name}</span>`
         : '';
 
       // Archive button for confirmed/delivered
@@ -168,7 +163,7 @@ menu: nav/home.html
         : '';
 
       return `
-        <div class="donation-card bg-white dark:bg-slate-800/80 rounded-2xl shadow-soft hover:shadow-medium border border-slate-200/50 dark:border-slate-700/50 p-5 transition-all duration-200" data-status="${status}" id="card-${d.id}">
+        <div class="donation-card bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 p-5 transition-all duration-200" data-status="${status}" id="card-${d.id}">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-2xl flex-shrink-0">
               ${CATEGORY_MAP[d.category] || '📦'}

@@ -1,10 +1,10 @@
-# 🔧 Hunger Heroes — Backend Flask API for Barcode Donation System
+# Hunger Heroes — Backend Flask API for Barcode Donation System
 
 > **Purpose**: This document provides a complete prompt/specification for implementing the Flask backend that complements the frontend barcode donation label system. The frontend is fully functional with offline/localStorage fallback — this backend adds persistence, multi-user support, and advanced features.
 
 ---
 
-## 📐 Architecture Overview
+## Architecture Overview
 
 ```
 Frontend (Jekyll + Tailwind)          Backend (Flask + SQLite/PostgreSQL)
@@ -33,7 +33,7 @@ Frontend (Jekyll + Tailwind)          Backend (Flask + SQLite/PostgreSQL)
 
 ---
 
-## 📦 Data Model
+## Data Model
 
 ### Donation Table
 
@@ -327,7 +327,7 @@ ALLOWED_STATUSES = ['active', 'accepted', 'delivered', 'expired', 'cancelled']
 
 ---
 
-## 🧩 Flask Blueprint Implementation
+## Flask Blueprint Implementation
 
 ```python
 # api/donation.py
@@ -571,7 +571,7 @@ api.add_resource(DonationDeliverAPI, '/donation/<string:donation_id>/deliver')
 
 ---
 
-## 🗃️ Model `to_dict()` Method
+## Model `to_dict()` Method
 
 ```python
 def to_dict(self):
@@ -604,7 +604,7 @@ def to_dict(self):
 
 ---
 
-## 🧪 Test Data Seeder
+## Test Data Seeder
 
 ```python
 def seed_donations():
@@ -670,7 +670,7 @@ def seed_donations():
 
 ---
 
-## 🔐 CORS Configuration
+## CORS Configuration
 
 Make sure your Flask CORS config allows the frontend origin:
 
@@ -686,7 +686,7 @@ CORS(app, supports_credentials=True, origins=[
 
 ---
 
-## 📋 Registration in Main App
+## Registration in Main App
 
 ```python
 # In your main app __init__.py or app.py, register the blueprint:
@@ -697,7 +697,7 @@ app.register_blueprint(donation_api)
 
 ---
 
-## ✅ Checklist for Backend Implementation
+## Checklist for Backend Implementation
 
 - [ ] Create `model/donation.py` with the `Donation` model (including `delivered_by`, `delivered_at`)
 - [ ] Create `api/donation.py` with all 6 endpoints
@@ -739,7 +739,7 @@ The frontend already works fully offline using `localStorage`. The backend adds:
 
 ---
 
-## ⏰ Auto-Cleanup: Remove Delivered Donations After 24 Hours
+## Auto-Cleanup: Remove Delivered Donations After 24 Hours
 
 Donations marked as "delivered" should be automatically deleted from the database after 24 hours. Use **APScheduler** (recommended for Flask) or a simple cron job.
 
@@ -815,4 +815,4 @@ The scan page (`scan.md`) already runs a client-side cleanup on page load that r
 
 ---
 
-*Generated for Hunger Heroes — City of San Diego Food Security Initiative*
+*Generated for Hunger Heroes — San Diego Food Security Initiative*

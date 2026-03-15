@@ -5,65 +5,45 @@
 @import "design-tokens";
 
 // ----- Glass Morphism -----
-@mixin glass($bg: rgba(255, 255, 255, 0.7), $border: rgba(255, 255, 255, 0.3)) {
+@mixin glass($bg: #ffffff, $border: #e0e0e0) {
   background: $bg;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid $border;
 }
 
-@mixin glass-dark($bg: rgba(15, 23, 42, 0.7), $border: rgba(255, 255, 255, 0.1)) {
+@mixin glass-dark($bg: #212121, $border: #424242) {
   background: $bg;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid $border;
 }
 
-// ----- Gradient Text -----
-@mixin gradient-text($from: $primary-500, $via: $accent-500, $to: $primary-500) {
-  background: linear-gradient(135deg, $from 0%, $via 50%, $to 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-x 8s ease infinite;
+// ----- Gradient Text (replaced with solid color for professional look) -----
+@mixin gradient-text($from: #1B5E20, $via: #1B5E20, $to: #1B5E20) {
+  color: $from;
 }
 
-// ----- Card Hover -----
-@mixin card-hover($shadow-color: rgba(0, 102, 204, 0.2)) {
-  transition: all $transition-cubic;
+// ----- Card Hover (professional hover effect without translation) -----
+@mixin card-hover($shadow-color: rgba(0, 0, 0, 0.1)) {
+  transition: all $transition-normal;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -15px $shadow-color;
+    box-shadow: 0 12px 24px -8px $shadow-color;
   }
 }
 
-// ----- Shimmer Button -----
-@mixin shimmer-button($gradient-from: $primary-500, $gradient-to: $primary-700) {
-  background: linear-gradient(135deg, $gradient-from 0%, $gradient-to 100%);
+// ----- Shimmer Button (replaced with professional solid styling) -----
+@mixin shimmer-button($gradient-from: #1B5E20, $gradient-to: #1a5420) {
+  background: $gradient-from;
+  border: 1px solid darken($gradient-from, 10%);
   transition: all $transition-normal;
   position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-
-  &:hover::before {
-    left: 100%;
-  }
-
+  
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px -10px rgba($gradient-from, 0.5);
+    background: $gradient-to;
+    border-color: darken($gradient-to, 10%);
+    box-shadow: 0 4px 12px rgba($gradient-from, 0.25);
+  }
+  
+  &:active {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -114,17 +94,17 @@
   background-size: 200% 100%;
 }
 
-// ----- Section Divider -----
-@mixin section-divider($color: $green-500) {
+// ----- Section Divider (professional solid line) -----
+@mixin section-divider($color: #1B5E20) {
   position: relative;
 
   &::after {
     content: '';
     display: block;
     width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, $color, lighten($color, 15%));
-    border-radius: $radius-full;
+    height: 2px;
+    background: $color;
+    border-radius: 1px;
     margin: $spacing-lg auto 0;
   }
 }

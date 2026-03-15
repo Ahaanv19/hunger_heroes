@@ -47,13 +47,9 @@
   letter-spacing: 0.025em;
 }
 
-// ===== FLOATING DECORATIVE SHAPES =====
+// ===== FLOATING DECORATIVE SHAPES (removed for professional design) =====
 .floating-shape {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.15;
-  animation: float 8s ease-in-out infinite;
+  display: none;
 }
 
 // ===== SKELETON LOADING =====
@@ -124,16 +120,16 @@
   border-radius: $radius-lg;
 }
 
-// ===== WEATHER WIDGET =====
+// ===== WEATHER WIDGET (professional solid styling) =====
 .weather-widget {
-  background: linear-gradient(135deg, $primary-500 0%, $accent-600 100%);
+  background: #1B5E20;
   border-radius: $radius-lg;
   padding: $spacing-md $spacing-lg;
   color: white;
   display: flex;
   align-items: center;
   gap: $spacing-md;
-  box-shadow: 0 4px 15px rgba($primary-500, 0.3);
+  border: 1px solid #155020;
 }
 
 .weather-icon {

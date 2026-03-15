@@ -10,39 +10,39 @@
 // 1. COLOR TOKENS
 // ---------------------------------------------------------
 
-// --- Primary (Green) ---
-$token-primary-50:    #f0fdf4;
-$token-primary-100:   #dcfce7;
-$token-primary-200:   #bbf7d0;
-$token-primary-300:   #86efac;
-$token-primary-400:   #4ade80;
-$token-primary-500:   #22c55e;   // Main brand green (buttons, accents)
-$token-primary-600:   #16a34a;   // Hover / active state
-$token-primary-700:   #15803d;
-$token-primary-800:   #166534;
-$token-primary-900:   #14532d;
+// --- Primary (Deep Forest Green) ---
+$token-primary-50:    #f0faf5;
+$token-primary-100:   #dceee7;
+$token-primary-200:   #b8dccf;
+$token-primary-300:   #75b8a3;
+$token-primary-400:   #409678;
+$token-primary-500:   #1B5E20;   // Main brand green (buttons, accents)
+$token-primary-600:   #1a5420;   // Hover / active state
+$token-primary-700:   #155020;
+$token-primary-800:   #0d3817;
+$token-primary-900:   #051f0d;
 
-// --- Secondary (Emerald) ---
-$token-secondary-50:  #ecfdf5;
-$token-secondary-100: #d1fae5;
-$token-secondary-200: #a7f3d0;
-$token-secondary-300: #6ee7b7;
-$token-secondary-400: #34d399;
-$token-secondary-500: #10b981;
-$token-secondary-600: #059669;
-$token-secondary-700: #047857;
+// --- Secondary (Slate Gray) ---
+$token-secondary-50:  #f8fafb;
+$token-secondary-100: #eef1f3;
+$token-secondary-200: #dde4e8;
+$token-secondary-300: #c5cfd6;
+$token-secondary-400: #9ba8b3;
+$token-secondary-500: #455A64;
+$token-secondary-600: #3d505b;
+$token-secondary-700: #354752;
 
 // --- Neutral / Slate ---
-$token-neutral-50:    #f8fafc;
-$token-neutral-100:   #f1f5f9;
-$token-neutral-200:   #e2e8f0;
-$token-neutral-300:   #cbd5e1;
-$token-neutral-400:   #94a3b8;
-$token-neutral-500:   #64748b;
-$token-neutral-600:   #475569;
-$token-neutral-700:   #334155;
-$token-neutral-800:   #1e293b;
-$token-neutral-900:   #0f172a;
+$token-neutral-50:    #fafafa;
+$token-neutral-100:   #f5f5f5;
+$token-neutral-200:   #e0e0e0;
+$token-neutral-300:   #d0d0d0;
+$token-neutral-400:   #a8a8a8;
+$token-neutral-500:   #757575;
+$token-neutral-600:   #616161;
+$token-neutral-700:   #424242;
+$token-neutral-800:   #212121;
+$token-neutral-900:   #121212;
 
 // --- Semantic ---
 $token-success:       #22c55e;
@@ -50,6 +50,8 @@ $token-warning:       #f59e0b;
 $token-error:         #ef4444;
 $token-info:          #3b82f6;
 
+
+// --IMPORTANT: Ensure to add any new colors to the palette above and reference them in the component-level tokens below.  Avoid hardcoding colors directly in components to maintain consistency and ease of updates across the app.
 // --- Surfaces ---
 $token-bg-page:       #ffffff;
 $token-bg-section:    #f8fafc;   // light gray behind cards
@@ -58,24 +60,24 @@ $token-bg-input:      #dcfce7;   // light-green input fills (Figma)
 $token-bg-dark:       #0f172a;
 
 // --- Text ---
-$token-text-primary:   #1e293b;
-$token-text-secondary: #64748b;
-$token-text-muted:     #94a3b8;
+$token-text-primary:   #212121;
+$token-text-secondary: #616161;
+$token-text-muted:     #9e9e9e;
 $token-text-inverse:   #ffffff;
-$token-text-link:      #16a34a;
+$token-text-link:      #1B5E20;
 
 // --- Border ---
-$token-border-light:   #e2e8f0;
-$token-border-default: #cbd5e1;
-$token-border-focus:   #22c55e;
+$token-border-light:   #e0e0e0;
+$token-border-default: #d0d0d0;
+$token-border-focus:   #1B5E20;
 
 // ---------------------------------------------------------
 // 2. TYPOGRAPHY TOKENS
 // ---------------------------------------------------------
 
 // --- Font Families ---
-$token-font-sans:      'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-$token-font-display:   'Plus Jakarta Sans', 'Inter', ui-sans-serif, sans-serif;
+$token-font-sans:      'Inter', 'Roboto', ui-sans-serif, system-ui, -apple-system, sans-serif;
+$token-font-display:   'Playfair Display', 'Merriweather', ui-serif, Georgia, serif;
 $token-font-mono:      'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
 
 // --- Font Sizes (rem) ---
@@ -100,7 +102,7 @@ $token-weight-extrabold: 800;
 $token-leading-tight:   1.25;
 $token-leading-snug:    1.375;
 $token-leading-normal:  1.5;
-$token-leading-relaxed: 1.625;
+$token-leading-relaxed: 1.6;  // Professional body text
 
 // --- Letter Spacing ---
 $token-tracking-tight:   -0.025em;
@@ -142,12 +144,12 @@ $token-radius-full: 9999px;    // circles / avatars
 // ---------------------------------------------------------
 // 5. SHADOW TOKENS
 // ---------------------------------------------------------
-$token-shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$token-shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-$token-shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-$token-shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-$token-shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-$token-shadow-glow:  0 0 30px rgba(34, 197, 94, 0.2);   // green glow
+$token-shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.08);
+$token-shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.10);
+$token-shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.12);
+$token-shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.15);
+$token-shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.15);
+$token-shadow-glow:  none;   // Remove glow in professional design
 
 // ---------------------------------------------------------
 // 6. TRANSITION TOKENS
@@ -192,7 +194,7 @@ $token-bp-2xl:  1536px;
 // Buttons
 $token-btn-padding-x:      $token-space-6;
 $token-btn-padding-y:      $token-space-3;
-$token-btn-radius:         $token-radius-2xl;   // pill shape from Figma
+$token-btn-radius:         4px;   // Professional subtle curve
 $token-btn-font-size:      $token-text-sm;
 $token-btn-font-weight:    $token-weight-semibold;
 $token-btn-bg:             $token-primary-500;
@@ -293,7 +295,7 @@ $radius-sm:    $token-radius-sm;
 $radius-md:    $token-radius-md;
 $radius-lg:    $token-radius-lg;
 $radius-xl:    $token-radius-xl;
-$radius-2xl:   $token-radius-2xl;
+$radius-2xl:   4px;           // Updated to subtle curve for professional look
 $radius-3xl:   2.5rem;           // not in base tokens — kept as literal
 $radius-full:  $token-radius-full;
 
