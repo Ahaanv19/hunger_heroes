@@ -4,18 +4,18 @@ if (location.hostname === "localhost") {
 } else if (location.hostname === "127.0.0.1") {
         pythonURI = "http://127.0.0.1:8288";
 } else {
-        pythonURI = "https://hungerheros.opencodingsociety.com/";
+        pythonURI = "https://hungerheros.opencodingsociety.com";
 }
 export var javaURI;
 
 // LOCAL SPRING BOOT BACKEND
 if (location.hostname === "localhost") {
-        javaURI = "http://localhost:8585";
+        javaURI = "http://localhost:8286";
 } else if (location.hostname === "127.0.0.1") {
-        javaURI = "http://127.0.0.1:8585";
+        javaURI = "http://127.0.0.1:8286";
 } else {
         // PRODUCTION SPRING BOOT BACKEND
-        javaURI = "https://spring.opencodingsociety.com";
+        javaURI = "https://hungerherosspring.opencodingsociety.com";
 }
 
 export const fetchOptions = {
