@@ -43,7 +43,7 @@ menu: nav/home.html
               </div>
               <div>
                 <h2 class="text-lg font-bold">HUNGER HEROES</h2>
-                <p class=\"text-white/80 text-xs font-medium\">FOOD DONATION LABEL</p>
+                <p class="text-white/80 text-xs font-medium">FOOD DONATION LABEL</p>
               </div>
             </div>
             <div class="text-right">
