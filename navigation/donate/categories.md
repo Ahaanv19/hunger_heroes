@@ -60,34 +60,21 @@ menu: nav/home.html
 </div>
 
 <script type="module">
-  import { javaURI, pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  // ============================================
+  // SRP IMPORTS: Shared single-responsibility functions
+  // ============================================
+  import {
+    javaURI, pythonURI,
+    springFetch, flaskFetch,
+    CATEGORY_EMOJIS, sourceBadge, errorPlaceholder,
+    normalizeDonationList, getErrorMessage
+  } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
-  const CATEGORY_EMOJIS = {
-    'All Food': '🍽️', 'Perishable': '🧊', 'Shelf-Stable': '🏪', 'Specialty': '✨',
-    produce: '🥦', dairy: '🧀', meat: '🥩', seafood: '🐟', prepared: '🍱',
-    canned: '🥫', 'dry-goods': '🌾', bakery: '🍞', snacks: '🍿',
-    beverages: '🥤', frozen: '🧊', 'baby-food': '🍼',
-  };
-
-  async function springFetch(url, opts = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-    try {
-      const res = await fetch(url, { ...fetchOptions, ...opts, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        throw new Error(body || `HTTP ${res.status}`);
-      }
-      return res.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.name === 'AbortError') throw new Error('Server took too long to respond.');
-      throw err;
-    }
-  }
-
-  /* ── Recursively render tree using <details> ── */
+  // ============================================
+  // RESPONSIBILITY: Recursively render tree using <details>
+  // Parameters: node (object) — { name, children }
+  // Returns: string — HTML
+  // ============================================
   function renderTree(node) {
     const emoji = CATEGORY_EMOJIS[node.name] || '📁';
     const children = node.children || [];
@@ -111,44 +98,83 @@ menu: nav/home.html
       </li>`;
   }
 
-  /* ── Load tree — try Spring first, build fallback from Flask ── */
+  // ============================================
+  // WORKER: Fetch category tree from Spring
+  // Returns: tree object
+  // ============================================
+  async function fetchSpringTree() {
+    return springFetch(`${javaURI}/api/donations/categories/tree`);
+  }
+
+  // ============================================
+  // WORKER: Build category tree from Flask donations (fallback)
+  // Returns: tree object
+  // ============================================
+  async function buildFlaskTree() {
+    const raw = await flaskFetch(`${pythonURI}/api/donations`);
+    const donations = normalizeDonationList(raw);
+
+    const categories = {};
+    donations.forEach(d => {
+      const cat = d.category || 'other';
+      if (!categories[cat]) categories[cat] = new Set();
+      if (d.food_name) categories[cat].add(d.food_name);
+    });
+
+    return {
+      name: 'All Food',
+      children: Object.entries(categories).map(([cat, foods]) => ({
+        name: cat,
+        children: [...foods].map(f => ({ name: f, children: [] }))
+      }))
+    };
+  }
+
+  // ============================================
+  // WORKER: Fetch category path from Spring
+  // Parameters: cat (string)
+  // Returns: array
+  // ============================================
+  async function fetchCategoryPath(cat) {
+    return springFetch(`${javaURI}/api/donations/categories/path?category=${encodeURIComponent(cat)}`);
+  }
+
+  // ============================================
+  // RESPONSIBILITY: Render category path breadcrumbs
+  // Parameters: items (array), container (Element)
+  // ============================================
+  function renderPath(items, container) {
+    if (items.length === 0) {
+      container.innerHTML = '<p class="text-slate-500 dark:text-slate-400 text-sm">Category not found.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <div class="flex items-center flex-wrap gap-2">
+        ${items.map((p, i) => {
+          const emoji = CATEGORY_EMOJIS[p] || '📁';
+          const isLast = i === items.length - 1;
+          return `<span class="px-3 py-1.5 rounded-lg text-sm font-semibold ${isLast ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">${emoji} ${p}</span>${!isLast ? '<svg class="w-4 h-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' : ''}`;
+        }).join('')}
+      </div>`;
+  }
+
+  // ============================================
+  // ORCHESTRATOR: Load tree on page load — Spring → Flask fallback
+  // ============================================
   document.addEventListener('DOMContentLoaded', async () => {
     const area = document.getElementById('tree-area');
     let tree = null;
     let source = '';
 
-    // 1. Try Spring categories/tree (required route)
+    // Step 1: Try Spring
     try {
-      tree = await springFetch(`${javaURI}/api/donations/categories/tree`);
+      tree = await fetchSpringTree();
       source = 'spring';
     } catch (springErr) {
       console.log('Spring categories unavailable, building from Flask…', springErr.message);
-
-      // 2. Fallback: build a category tree from Flask donation data
+      // Step 2: Flask fallback
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const res = await fetch(`${pythonURI}/api/donations`, { ...fetchOptions, signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const raw = await res.json();
-        const donations = Array.isArray(raw) ? raw : (Array.isArray(raw?.donations) ? raw.donations : []);
-
-        // Extract unique categories and build a simple tree
-        const categories = {};
-        donations.forEach(d => {
-          const cat = d.category || 'other';
-          if (!categories[cat]) categories[cat] = new Set();
-          if (d.food_name) categories[cat].add(d.food_name);
-        });
-
-        tree = {
-          name: 'All Food',
-          children: Object.entries(categories).map(([cat, foods]) => ({
-            name: cat,
-            children: [...foods].map(f => ({ name: f, children: [] }))
-          }))
-        };
+        tree = await buildFlaskTree();
         source = 'flask';
       } catch (flaskErr) {
         console.log('Flask also unavailable');
@@ -156,20 +182,17 @@ menu: nav/home.html
     }
 
     if (!tree || !tree.children) {
-      area.innerHTML = `
-        <div class="text-center py-8">
-          <div class="text-4xl mb-2">⚠️</div>
-          <p class="text-slate-500 dark:text-slate-400 text-sm">Could not load categories from either backend.</p>
-          <button onclick="location.reload()" class="mt-3 px-4 py-1.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-xs font-semibold transition-colors">Retry</button>
-        </div>`;
+      area.innerHTML = errorPlaceholder('Could not load categories from either backend.');
       return;
     }
 
-    const sourceBadge = `<div class="mb-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${source === 'spring' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' : 'bg-sky-100 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'}">${source === 'spring' ? '☕ Java Spring' : '🐍 Flask'}</span></div>`;
-    area.innerHTML = sourceBadge + `<ul class="space-y-1">${renderTree(tree)}</ul>`;
+    // Step 3: Render
+    area.innerHTML = `<div class="mb-4">${sourceBadge(source)}</div>` + `<ul class="space-y-1">${renderTree(tree)}</ul>`;
   });
 
-  /* ── Find path ── */
+  // ============================================
+  // ORCHESTRATOR: Handle path trace form
+  // ============================================
   document.getElementById('path-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const cat = document.getElementById('path-input').value.trim();
@@ -180,26 +203,17 @@ menu: nav/home.html
     btn.disabled = true;
     btn.textContent = 'Tracing…';
 
-    try {
-      const path = await springFetch(`${javaURI}/api/donations/categories/path?category=${encodeURIComponent(cat)}`);
-      const items = Array.isArray(path) ? path : [];
-      if (items.length === 0) {
-        result.innerHTML = '<p class="text-slate-500 dark:text-slate-400 text-sm">Category not found.</p>';
-      } else {
-        result.innerHTML = `
-          <div class="flex items-center flex-wrap gap-2">
-            ${items.map((p, i) => {
-              const emoji = CATEGORY_EMOJIS[p] || '📁';
-              const isLast = i === items.length - 1;
-              return `<span class="px-3 py-1.5 rounded-lg text-sm font-semibold ${isLast ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">${emoji} ${p}</span>${!isLast ? '<svg class="w-4 h-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' : ''}`;
-            }).join('')}
-          </div>`;
-      }
-    } catch (err) {
-      result.innerHTML = `<p class="text-red-600 dark:text-red-400 text-sm">Error: ${err.message}</p>`;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Trace Path';
-    }
+    fetchCategoryPath(cat)
+      .then(path => {
+        const items = Array.isArray(path) ? path : [];
+        renderPath(items, result);
+      })
+      .catch(err => {
+        result.innerHTML = `<p class="text-red-600 dark:text-red-400 text-sm">Error: ${getErrorMessage(err)}</p>`;
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Trace Path';
+      });
   });
 </script>

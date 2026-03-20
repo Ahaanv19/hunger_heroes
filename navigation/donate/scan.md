@@ -156,8 +156,19 @@ menu: nav/home.html
 </div>
 
 <script type="module">
-  import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  // ============================================
+  // SRP IMPORTS: Shared single-responsibility functions
+  // ============================================
+  import {
+    pythonURI, javaURI, fetchOptions,
+    springFetch, flaskFetch,
+    urgencyBadge, computeUrgency,
+    getLocalDonations, showToast, getErrorMessage
+  } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
+  // ============================================
+  // CONFIGURATION: Scan-page constants
+  // ============================================
   const CATEGORY_MAP = {
     'canned':'🥫','fresh-produce':'🥬','dairy':'🧀','bakery':'🍞',
     'meat-protein':'🥩','grains':'🌾','beverages':'🥤','frozen':'❄️',
@@ -183,8 +194,9 @@ menu: nav/home.html
   let currentDonation = null;
   let html5QrCode = null;
 
-  // ── Tab Switching ──
-
+  // ============================================
+  // RESPONSIBILITY: Switch between Camera / Manual tabs
+  // ============================================
   window.switchTab = function(tab) {
     const isCamera = tab === 'camera';
     document.getElementById('panel-camera').classList.toggle('hidden', !isCamera);
@@ -206,11 +218,11 @@ menu: nav/home.html
     }
   };
 
-  // ── Camera with html5-qrcode ──
-
+  // ============================================
+  // RESPONSIBILITY: Start QR camera scanner
+  // ============================================
   function startCamera() {
     if (html5QrCode) return;
-    const el = document.getElementById('qr-reader');
     html5QrCode = new Html5Qrcode('qr-reader');
     html5QrCode.start(
       { facingMode: 'environment' },
@@ -229,22 +241,25 @@ menu: nav/home.html
     });
   }
 
+  // ============================================
+  // RESPONSIBILITY: Stop QR camera scanner
+  // ============================================
   function stopCamera() {
     if (html5QrCode) {
       try {
         const state = html5QrCode.getState();
-        // Only stop if actually scanning (state 2 = SCANNING, state 3 = PAUSED)
         if (state === 2 || state === 3) {
           html5QrCode.stop().catch(() => {});
         }
-      } catch (e) { /* getState may throw if not initialized */ }
+      } catch (e) {}
       try { html5QrCode.clear(); } catch (e) {}
       html5QrCode = null;
     }
   }
 
-  // ── Manual Lookup ──
-
+  // ============================================
+  // RESPONSIBILITY: Manual ID lookup entry point
+  // ============================================
   window.lookupById = function() {
     const id = document.getElementById('manual-id').value.trim();
     if (!id) return;
@@ -255,75 +270,120 @@ menu: nav/home.html
     if (e.key === 'Enter') window.lookupById();
   });
 
-  // ── Core Lookup ──
+  // ============================================
+  // WORKER: Try Spring scan endpoint
+  // Parameters: id (string)
+  // Returns: { donation, warnings } or null
+  // ============================================
+  async function trySpringScan(id) {
+    const data = await springFetch(`${javaURI}/api/donations/scan`, {
+      method: 'POST',
+      body: JSON.stringify({ scan_data: id, scan_type: 'qr' })
+    });
+    console.log('✅ Spring scan lookup');
+    return { donation: data, warnings: data.warnings || [] };
+  }
 
+  // ============================================
+  // WORKER: Try Flask scan endpoint
+  // Parameters: id (string)
+  // Returns: { donation, warnings } or null
+  // ============================================
+  async function tryFlaskScan(id) {
+    const data = await flaskFetch(`${pythonURI}/api/donations/scan`, {
+      method: 'POST',
+      body: JSON.stringify({ scan_data: id, scan_type: 'qr' })
+    });
+    return { donation: data, warnings: data.warnings || [] };
+  }
+
+  // ============================================
+  // WORKER: Try Spring GET by ID
+  // ============================================
+  async function trySpringGet(id) {
+    return springFetch(`${javaURI}/api/donations/${encodeURIComponent(id)}`);
+  }
+
+  // ============================================
+  // WORKER: Try Flask GET by ID
+  // ============================================
+  async function tryFlaskGet(id) {
+    return flaskFetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}`);
+  }
+
+  // ============================================
+  // WORKER: Try localStorage lookup
+  // Parameters: id (string)
+  // Returns: { donation, warnings }
+  // ============================================
+  function tryLocalStorage(id) {
+    const all = getLocalDonations();
+    const donation = all.find(d => d.id === id);
+    if (!donation) return null;
+
+    const warnings = [];
+    const expiry = new Date(donation.expiry_date);
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (expiry < today) {
+      warnings.push({ type: 'expired', message: `This donation expired on ${donation.expiry_date}` });
+      if (donation.status === 'posted') donation.status = 'expired';
+    } else {
+      const daysLeft = Math.ceil((expiry - today) / 86400000);
+      if (daysLeft <= 3) warnings.push({ type: 'expiring_soon', message: `Expires in ${daysLeft} day(s)` });
+    }
+    return { donation, warnings };
+  }
+
+  // ============================================
+  // RESPONSIBILITY: Build urgency warning from donation data
+  // Parameters: d (object)
+  // Returns: array of warning objects
+  // ============================================
+  function buildUrgencyWarnings(d) {
+    const urgency = computeUrgency(d);
+    if (!urgency || urgency.level === 'fresh' || urgency.level === 'unknown') return [];
+    if (urgency.level === 'expired') return [{ type: 'expired', message: `⚫ This donation has expired!` }];
+    if (urgency.level === 'urgent') return [{ type: 'expiring_soon', message: `🔴 URGENT — less than 1 hour left before expiry!` }];
+    if (urgency.level === 'expiring') return [{ type: 'expiring_soon', message: `🟡 Expiring Soon — about ${Math.round(urgency.hoursLeft)}h left` }];
+    return [];
+  }
+
+  // ============================================
+  // ORCHESTRATOR: Core lookup — multi-tier fallback chain
+  // Parameters: id (string)
+  // ============================================
   async function lookupDonation(id) {
     let donation = null;
     let warnings = [];
 
-    // 1. Try Spring scan endpoint first (required route)
+    // Step 1: Spring scan
     try {
-      const springRes = await fetch(`${javaURI}/api/donations/scan`, {
-        ...fetchOptions,
-        method: 'POST',
-        body: JSON.stringify({ scan_data: id, scan_type: 'qr' })
-      });
-      if (springRes.ok) {
-        const data = await springRes.json();
-        donation = data;
-        warnings = data.warnings || [];
-        console.log('✅ Spring scan lookup');
-      }
+      const result = await trySpringScan(id);
+      if (result) { donation = result.donation; warnings = result.warnings; }
     } catch (e) {}
 
-    // 2. Fallback: Flask scan endpoint
+    // Step 2: Flask scan
     if (!donation) {
       try {
-        const res = await fetch(`${pythonURI}/api/donations/scan`, {
-          ...fetchOptions,
-          method: 'POST',
-          body: JSON.stringify({ scan_data: id, scan_type: 'qr' })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          donation = data;
-          warnings = data.warnings || [];
-        }
+        const result = await tryFlaskScan(id);
+        if (result) { donation = result.donation; warnings = result.warnings; }
       } catch (e) {}
     }
 
-    // 3. Fallback: try Spring GET by ID
+    // Step 3: Spring GET by ID
     if (!donation) {
-      try {
-        const springRes = await fetch(`${javaURI}/api/donations/${encodeURIComponent(id)}`, fetchOptions);
-        if (springRes.ok) donation = await springRes.json();
-      } catch (e) {}
+      try { donation = await trySpringGet(id); } catch (e) {}
     }
 
-    // 4. Fallback: try Flask GET by ID
+    // Step 4: Flask GET by ID
     if (!donation) {
-      try {
-        const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}`, fetchOptions);
-        if (res.ok) donation = await res.json();
-      } catch (e) {}
+      try { donation = await tryFlaskGet(id); } catch (e) {}
     }
 
-    // Fallback: localStorage
+    // Step 5: localStorage fallback
     if (!donation) {
-      const all = JSON.parse(localStorage.getItem('hh_donations') || '[]');
-      donation = all.find(d => d.id === id);
-      if (donation) {
-        // Check expiry locally
-        const expiry = new Date(donation.expiry_date);
-        const today = new Date(); today.setHours(0,0,0,0);
-        if (expiry < today) {
-          warnings.push({ type: 'expired', message: `This donation expired on ${donation.expiry_date}` });
-          if (donation.status === 'posted') donation.status = 'expired';
-        } else {
-          const daysLeft = Math.ceil((expiry - today) / 86400000);
-          if (daysLeft <= 3) warnings.push({ type: 'expiring_soon', message: `Expires in ${daysLeft} day(s)` });
-        }
-      }
+      const local = tryLocalStorage(id);
+      if (local) { donation = local.donation; warnings = local.warnings; }
     }
 
     if (!donation) {
@@ -331,13 +391,19 @@ menu: nav/home.html
       return;
     }
 
+    // Merge urgency warnings (from hour-based system)
+    const urgencyWarns = buildUrgencyWarnings(donation);
+    warnings = [...warnings, ...urgencyWarns];
+
     currentDonation = donation;
     showWarnings(warnings);
     showResult(donation);
   }
 
-  // ── Warning Banners ──
-
+  // ============================================
+  // RESPONSIBILITY: Render warning banners
+  // Parameters: warnings (array)
+  // ============================================
   function showWarnings(warnings) {
     const container = document.getElementById('warning-banners');
     if (!warnings.length) {
@@ -360,8 +426,10 @@ menu: nav/home.html
     }).join('');
   }
 
-  // ── Show Result ──
-
+  // ============================================
+  // RESPONSIBILITY: Render full donation result
+  // Parameters: d (object) — donation
+  // ============================================
   function showResult(d) {
     document.getElementById('result-panel').classList.remove('hidden');
 
@@ -407,32 +475,26 @@ menu: nav/home.html
       instrEl.classList.add('hidden');
     }
 
-    // Status timeline
+    // Delegate to sub-renderers
     renderTimeline(d);
-
-    // Volunteer section
     renderVolunteerSection(d);
-
-    // Action buttons
     renderActionButtons(d);
   }
 
-  // ── Status Timeline ──
-
+  // ============================================
+  // RESPONSIBILITY: Render status timeline
+  // Parameters: d (object)
+  // ============================================
   function renderTimeline(d) {
     const container = document.getElementById('status-timeline');
     const currentIdx = STATUS_FLOW.indexOf(d.status);
     const isTerminal = ['expired','cancelled'].includes(d.status);
 
     container.innerHTML = STATUS_FLOW.map((s, i) => {
-      let state = 'upcoming'; // gray
-      if (isTerminal) {
-        state = 'disabled';
-      } else if (i < currentIdx) {
-        state = 'done';
-      } else if (i === currentIdx) {
-        state = 'current';
-      }
+      let state = 'upcoming';
+      if (isTerminal) { state = 'disabled'; }
+      else if (i < currentIdx) { state = 'done'; }
+      else if (i === currentIdx) { state = 'current'; }
 
       const dotColor = state === 'done' ? 'bg-green-500' :
                         state === 'current' ? 'bg-primary-500 ring-4 ring-primary-500/30' :
@@ -451,7 +513,6 @@ menu: nav/home.html
       `;
     }).join('');
 
-    // Show terminal status badge if expired/cancelled
     if (isTerminal) {
       container.innerHTML += `
         <div class="flex flex-col items-center ml-2">
@@ -461,8 +522,10 @@ menu: nav/home.html
     }
   }
 
-  // ── Volunteer Section ──
-
+  // ============================================
+  // RESPONSIBILITY: Render volunteer section
+  // Parameters: d (object)
+  // ============================================
   function renderVolunteerSection(d) {
     const section = document.getElementById('volunteer-section');
     const info = document.getElementById('volunteer-info');
@@ -490,8 +553,10 @@ menu: nav/home.html
     }
   }
 
-  // ── Action Buttons ──
-
+  // ============================================
+  // RESPONSIBILITY: Render action buttons based on status
+  // Parameters: d (object)
+  // ============================================
   function renderActionButtons(d) {
     const container = document.getElementById('action-buttons');
     const buttons = [];
@@ -524,7 +589,6 @@ menu: nav/home.html
       </button>`);
     }
 
-    // View label button (always, if not expired/cancelled)
     if (!['expired','cancelled'].includes(d.status)) {
       buttons.push(`<a href="{{site.baseurl}}/donate/barcode?id=${encodeURIComponent(d.id)}" onclick="sessionStorage.setItem('hh_current_donation', JSON.stringify(currentDonation))"
         class="block w-full py-3 text-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg font-semibold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
@@ -535,101 +599,116 @@ menu: nav/home.html
     container.innerHTML = buttons.join('');
   }
 
-  // ── Status Transition ──
-
-  window.transitionStatus = async function(newStatus) {
-    if (!currentDonation) return;
+  // ============================================
+  // WORKER: Transition donation status via Flask
+  // Parameters: newStatus (string)
+  // ============================================
+  async function executeStatusTransition(newStatus) {
     const id = currentDonation.id;
-
-    // Build request payload — include volunteer info if available
     const payload = { new_status: newStatus };
-    if (currentDonation.volunteer && currentDonation.volunteer.volunteer_name) {
+    if (currentDonation.volunteer?.volunteer_name) {
       payload.volunteer_name = currentDonation.volunteer.volunteer_name;
     }
 
-    // Try backend
-    try {
-      const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}/status`, {
-        ...fetchOptions,
-        method: 'PATCH',
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        const result = await res.json();
-        currentDonation.status = newStatus;
-        // Set lifecycle timestamps locally
-        const now = new Date().toISOString();
-        if (newStatus === 'claimed') { currentDonation.claimed_at = now; }
-        if (newStatus === 'in_transit') { currentDonation.in_transit_at = now; }
-        if (newStatus === 'delivered') { currentDonation.delivered_at = now; }
-        if (newStatus === 'confirmed') { currentDonation.confirmed_at = now; }
-        showResult(currentDonation);
-        updateLocalStorage(currentDonation);
-        return;
-      }
+    const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}/status`, {
+      ...fetchOptions,
+      method: 'PATCH',
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      if (err.message) alert(err.message);
-      return;
-    } catch (e) {}
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    return res.json();
+  }
 
-    // Fallback: localStorage
-    currentDonation.status = newStatus;
-    const now = new Date().toISOString();
-    if (newStatus === 'claimed') { currentDonation.claimed_at = now; }
-    if (newStatus === 'in_transit') { currentDonation.in_transit_at = now; }
-    if (newStatus === 'delivered') { currentDonation.delivered_at = now; }
-    if (newStatus === 'confirmed') { currentDonation.confirmed_at = now; }
-    updateLocalStorage(currentDonation);
-    showResult(currentDonation);
+  // ============================================
+  // ORCHESTRATOR: Status transition — try backend → localStorage fallback
+  // ============================================
+  window.transitionStatus = async function(newStatus) {
+    if (!currentDonation) return;
+
+    try {
+      await executeStatusTransition(newStatus);
+      currentDonation.status = newStatus;
+      setLifecycleTimestamp(currentDonation, newStatus);
+      showResult(currentDonation);
+      updateLocalStorage(currentDonation);
+      return;
+    } catch (e) {
+      // Fallback: localStorage only
+      currentDonation.status = newStatus;
+      setLifecycleTimestamp(currentDonation, newStatus);
+      updateLocalStorage(currentDonation);
+      showResult(currentDonation);
+    }
   };
 
-  // ── Assign Volunteer ──
+  // ============================================
+  // RESPONSIBILITY: Set lifecycle timestamp on donation
+  // ============================================
+  function setLifecycleTimestamp(d, status) {
+    const now = new Date().toISOString();
+    if (status === 'claimed') d.claimed_at = now;
+    if (status === 'in_transit') d.in_transit_at = now;
+    if (status === 'delivered') d.delivered_at = now;
+    if (status === 'confirmed') d.confirmed_at = now;
+  }
 
+  // ============================================
+  // WORKER: Assign volunteer via Flask
+  // Parameters: name (string)
+  // ============================================
+  async function executeVolunteerAssignment(name) {
+    const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(currentDonation.id)}/assign-volunteer`, {
+      ...fetchOptions,
+      method: 'POST',
+      body: JSON.stringify({ volunteer_name: name })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    return res.json();
+  }
+
+  // ============================================
+  // ORCHESTRATOR: Assign volunteer — try backend → localStorage fallback
+  // ============================================
   window.assignVolunteer = async function() {
     if (!currentDonation) return;
     const name = document.getElementById('volunteer-name-input').value.trim();
     if (!name) { alert('Please enter your name'); return; }
 
-    // Try backend
     try {
-      const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(currentDonation.id)}/assign-volunteer`, {
-        ...fetchOptions,
-        method: 'POST',
-        body: JSON.stringify({ volunteer_name: name })
-      });
-      if (res.ok) {
-        const result = await res.json();
-        currentDonation.volunteer = result.assignment;
-        if (currentDonation.status === 'posted') {
-          currentDonation.status = 'claimed';
-          currentDonation.claimed_at = new Date().toISOString();
-        }
-        updateLocalStorage(currentDonation);
-        showResult(currentDonation);
-        return;
+      const result = await executeVolunteerAssignment(name);
+      currentDonation.volunteer = result.assignment;
+      if (currentDonation.status === 'posted') {
+        currentDonation.status = 'claimed';
+        currentDonation.claimed_at = new Date().toISOString();
       }
-      const err = await res.json().catch(() => ({}));
-      if (err.message) alert(err.message);
-      return;
-    } catch (e) {}
-
-    // Fallback: localStorage
-    currentDonation.volunteer = {
-      volunteer_name: name,
-      assigned_at: new Date().toISOString(),
-      picked_up_at: null,
-      delivered_at: null
-    };
-    if (currentDonation.status === 'posted') {
-      currentDonation.status = 'claimed';
-      currentDonation.claimed_at = new Date().toISOString();
+    } catch (e) {
+      // Fallback: localStorage
+      currentDonation.volunteer = {
+        volunteer_name: name,
+        assigned_at: new Date().toISOString(),
+        picked_up_at: null,
+        delivered_at: null
+      };
+      if (currentDonation.status === 'posted') {
+        currentDonation.status = 'claimed';
+        currentDonation.claimed_at = new Date().toISOString();
+      }
     }
+
     updateLocalStorage(currentDonation);
     showResult(currentDonation);
   };
 
-  // ── Helpers ──
-
+  // ============================================
+  // RESPONSIBILITY: Sync donation to localStorage
+  // Parameters: d (object)
+  // ============================================
   function updateLocalStorage(d) {
     const all = JSON.parse(localStorage.getItem('hh_donations') || '[]');
     const idx = all.findIndex(x => x.id === d.id);
@@ -637,6 +716,9 @@ menu: nav/home.html
     localStorage.setItem('hh_donations', JSON.stringify(all));
   }
 
+  // ============================================
+  // RESPONSIBILITY: Reset scanner to initial state
+  // ============================================
   window.resetScanner = function() {
     currentDonation = null;
     document.getElementById('result-panel').classList.add('hidden');
@@ -648,7 +730,9 @@ menu: nav/home.html
     }
   };
 
-  // ── Init ──
+  // ============================================
+  // ORCHESTRATOR: Page init — start camera, cleanup, check URL params
+  // ============================================
   document.addEventListener('DOMContentLoaded', () => {
     startCamera();
 

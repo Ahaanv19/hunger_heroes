@@ -139,187 +139,202 @@ menu: nav/home.html
 </div>
 
 <script type="module">
-  import { javaURI, pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  // ============================================
+  // SRP IMPORTS: Shared single-responsibility functions
+  // ============================================
+  import {
+    javaURI, pythonURI,
+    springFetch, flaskFetch,
+    statusBadge, urgencyBadge, sourceBadge,
+    normalizeDonationList, showToast,
+    emptyPlaceholder, ERROR_TYPES, getErrorMessage
+  } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
-  /* ── Utility: fetch with 8-second timeout ── */
-  async function springFetch(url, opts = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-    try {
-      const res = await fetch(url, { ...fetchOptions, ...opts, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (res.status === 401 || res.status === 403) {
-        throw new Error('AUTH');
-      }
-      if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        throw new Error(body || `HTTP ${res.status}`);
-      }
-      return res.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.name === 'AbortError') throw new Error('Server took too long to respond. Please try again.');
-      throw err;
-    }
-  }
-
-  /* ── Flask fetch fallback ── */
-  async function flaskFetch(url, opts = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    try {
-      const res = await fetch(url, { ...fetchOptions, ...opts, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-      throw err;
-    }
-  }
-
-  /* ── Status badge (handles both Flask & Spring names) ── */
-  function statusBadge(raw) {
-    const s = (raw || 'unknown').toLowerCase().replace(/ /g, '_');
-    const map = {
-      posted: ['📋 Posted', 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'],
-      active: ['📋 Active', 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'],
-      claimed: ['🤝 Claimed', 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'],
-      accepted: ['🤝 Accepted', 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'],
-      in_transit: ['🚚 In Transit', 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'],
-      'in-transit': ['🚚 In Transit', 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'],
-      delivered: ['📦 Delivered', 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'],
-      confirmed: ['✅ Confirmed', 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'],
-      cancelled: ['❌ Cancelled', 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
-      expired: ['⏰ Expired', 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'],
+  // ============================================
+  // RESPONSIBILITY: Extract form values from the match form
+  // Returns: { zip, dietary, allergenExclude }
+  // ============================================
+  function getFormValues() {
+    return {
+      zip: document.getElementById('zip').value.trim(),
+      dietary: [...document.querySelectorAll('input[name="dietary"]:checked')].map(c => c.value),
+      allergenExclude: [...document.querySelectorAll('input[name="allergen_exclude"]:checked')].map(c => c.value),
     };
-    const [label, cls] = map[s] || ['❓ ' + raw, 'bg-gray-100 text-gray-600'];
-    return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${cls}">${label}</span>`;
   }
 
-  /* ── Toast ── */
-  function showToast(msg, type = 'success') {
-    const el = document.getElementById('toast');
-    const inner = document.getElementById('toast-inner');
-    inner.className = `px-5 py-3 rounded-xl text-white text-sm font-semibold shadow-large flex items-center gap-2 ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
-    inner.textContent = msg;
-    el.classList.remove('hidden');
-    setTimeout(() => el.classList.add('hidden'), 4000);
+  // ============================================
+  // RESPONSIBILITY: Validate zip code format
+  // Parameters: zip (string)
+  // Returns: boolean
+  // ============================================
+  function isValidZip(zip) {
+    return /^\d{5}$/.test(zip);
   }
 
-  /* ── Form submit → match ── */
+  // ============================================
+  // RESPONSIBILITY: Client-side filter donations by zip, allergens, status
+  // Parameters: donations (array), zip (string), allergenExclude (array)
+  // Returns: array — filtered donations
+  // ============================================
+  function filterDonationsClientSide(donations, zip, allergenExclude) {
+    let result = donations;
+
+    // Zip filter (match first 3 digits)
+    result = result.filter(d => {
+      const donorZip = d.donor_zip || d.zip_code || '';
+      return donorZip.startsWith(zip.substring(0, 3));
+    });
+
+    // Allergen exclusion
+    if (allergenExclude.length) {
+      result = result.filter(d => {
+        const dAllergens = (d.allergens || []).map(a => a.toLowerCase());
+        return !allergenExclude.some(ex => dAllergens.includes(ex.toLowerCase()));
+      });
+    }
+
+    // Only active/posted donations
+    result = result.filter(d => {
+      const s = (d.status || '').toLowerCase();
+      return s === 'posted' || s === 'active';
+    });
+
+    return result;
+  }
+
+  // ============================================
+  // RESPONSIBILITY: Render a single match result card
+  // Parameters: d (object) — donation
+  // Returns: string — HTML card
+  // ============================================
+  function renderMatchCard(d) {
+    const dte = d.days_until_expiry ?? d.daysUntilExpiry ?? null;
+    const expiryColor = dte === null ? 'text-slate-400' : dte > 5 ? 'text-green-600 dark:text-green-400' : dte >= 2 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400';
+    const allergens = (d.allergens || []).map(a => `<span class="px-2 py-0.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md text-xs font-medium">${a}</span>`).join(' ');
+    const tags = (d.dietary_tags || []).map(t => `<span class="px-2 py-0.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-md text-xs font-medium">${t}</span>`).join(' ');
+    return `
+    <div class="glass rounded-2xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 p-5 hover:shadow-large transition-shadow">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-3 mb-2">
+            <h3 class="font-bold text-slate-900 dark:text-white text-lg">${d.food_name || 'Food Donation'}</h3>
+            ${statusBadge(d.status)}
+            ${urgencyBadge(d)}
+          </div>
+          <div class="flex flex-wrap gap-2 mt-2 text-sm text-slate-500 dark:text-slate-400">
+            <span>📍 ${d.donor_zip || d.zip_code || '—'}</span>
+            <span>📂 ${d.category || '—'}</span>
+            <span>📦 ${d.quantity || '—'} ${d.unit || ''}</span>
+            <span>🗄️ ${d.storage || '—'}</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-2 text-sm">
+            <span class="${expiryColor} font-semibold">📅 ${d.expiry_date || d.expiration_date || '—'}${dte !== null ? ` (${dte}d left)` : ''}</span>
+          </div>
+          ${allergens ? `<div class="flex flex-wrap gap-1 mt-2"><span class="text-xs text-slate-400 mr-1">Allergens:</span>${allergens}</div>` : ''}
+          ${tags ? `<div class="flex flex-wrap gap-1 mt-2"><span class="text-xs text-slate-400 mr-1">Diet:</span>${tags}</div>` : ''}
+        </div>
+        <button data-accept-id="${d.id}" class="accept-btn px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all whitespace-nowrap mt-2 sm:mt-0">
+          ✋ Accept
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // ============================================
+  // RESPONSIBILITY: Render all match results
+  // Parameters: items (array), source (string), container (Element)
+  // ============================================
+  function renderResults(items, source, container) {
+    if (items.length === 0) {
+      container.innerHTML = emptyPlaceholder(
+        'No Matches Found',
+        'Try adjusting your filters or check back later for new donations.',
+        '🔍'
+      );
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">${items.length} Match${items.length !== 1 ? 'es' : ''} Found</h2>
+        ${sourceBadge(source)}
+      </div>
+      <div class="space-y-4">${items.map(renderMatchCard).join('')}</div>`;
+  }
+
+  // ============================================
+  // WORKER: Fetch matches from Spring backend
+  // Parameters: zip, dietary, allergenExclude
+  // Returns: array — matched donations
+  // ============================================
+  async function fetchSpringMatches(zip, dietary, allergenExclude) {
+    return springFetch(`${javaURI}/api/donations/match`, {
+      method: 'POST',
+      body: JSON.stringify({ zip, dietary_prefs: dietary, allergen_exclusions: allergenExclude })
+    });
+  }
+
+  // ============================================
+  // WORKER: Fetch and filter donations from Flask (fallback)
+  // Parameters: zip, allergenExclude
+  // Returns: array — filtered donations
+  // ============================================
+  async function fetchFlaskMatches(zip, allergenExclude) {
+    const raw = normalizeDonationList(await flaskFetch(`${pythonURI}/api/donations`));
+    return filterDonationsClientSide(raw, zip, allergenExclude);
+  }
+
+  // ============================================
+  // WORKER: Accept a donation via Spring
+  // Parameters: id (string)
+  // ============================================
+  async function acceptDonation(id) {
+    return springFetch(`${javaURI}/api/donations/${id}/accept`, { method: 'POST' });
+  }
+
+  // ============================================
+  // ORCHESTRATOR: Handle form submit — coordinates validation → fetch → render
+  // ============================================
   document.getElementById('match-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const zip = document.getElementById('zip').value.trim();
-    if (!/^\d{5}$/.test(zip)) { showToast('Please enter a valid 5-digit zip code', 'error'); return; }
-
-    const dietary = [...document.querySelectorAll('input[name="dietary"]:checked')].map(c => c.value);
-    const allergenExclude = [...document.querySelectorAll('input[name="allergen_exclude"]:checked')].map(c => c.value);
+    const { zip, dietary, allergenExclude } = getFormValues();
+    if (!isValidZip(zip)) { showToast('Please enter a valid 5-digit zip code', 'error'); return; }
 
     const btn = document.getElementById('match-btn');
+    const results = document.getElementById('results-area');
+
+    // UI: disable button
     btn.disabled = true;
     btn.innerHTML = '<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Searching…';
-
-    const results = document.getElementById('results-area');
 
     try {
       let items = [];
       let source = '';
 
-      // 1. Try Spring smart-match endpoint (required route)
+      // Step 1: Try Spring smart-match
       try {
-        const data = await springFetch(`${javaURI}/api/donations/match`, {
-          method: 'POST',
-          body: JSON.stringify({ zip: zip, dietary_prefs: dietary, allergen_exclusions: allergenExclude })
-        });
+        const data = await fetchSpringMatches(zip, dietary, allergenExclude);
         items = Array.isArray(data) ? data : [];
         source = 'spring';
       } catch (springErr) {
-        console.log('Spring match unavailable, trying Flask fallback…', springErr.message);
-
-        // 2. Fall back to Flask: fetch all donations, filter client-side
-        const data = await flaskFetch(`${pythonURI}/api/donations`);
-        let raw = Array.isArray(data) ? data : (Array.isArray(data?.donations) ? data.donations : []);
-
-        // Client-side zip filter
-        raw = raw.filter(d => {
-          const donorZip = d.donor_zip || d.zip_code || '';
-          return donorZip.startsWith(zip.substring(0, 3)); // match first 3 digits
-        });
-
-        // Client-side allergen exclusion
-        if (allergenExclude.length) {
-          raw = raw.filter(d => {
-            const dAllergens = (d.allergens || []).map(a => a.toLowerCase());
-            return !allergenExclude.some(ex => dAllergens.includes(ex.toLowerCase()));
-          });
-        }
-
-        // Only show active/posted donations
-        raw = raw.filter(d => {
-          const s = (d.status || '').toLowerCase();
-          return s === 'posted' || s === 'active';
-        });
-
-        items = raw;
+        console.log('Spring match unavailable, trying Flask…', springErr.message);
+        // Step 2: Fall back to Flask with client-side filtering
+        items = await fetchFlaskMatches(zip, allergenExclude);
         source = 'flask';
       }
 
-      if (items.length === 0) {
-        results.innerHTML = `
-          <div class="text-center py-16">
-            <div class="text-6xl mb-4">🔍</div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Matches Found</h3>
-            <p class="text-slate-500 dark:text-slate-400">Try adjusting your filters or check back later for new donations.</p>
-          </div>`;
-        return;
-      }
-
-      results.innerHTML = `
-        <div class="flex items-center gap-3 mb-4">
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">${items.length} Match${items.length !== 1 ? 'es' : ''} Found</h2>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${source === 'spring' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' : 'bg-sky-100 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'}">
-            ${source === 'spring' ? '☕ Java Spring' : '🐍 Flask'}
-          </span>
-        </div>
-        <div class="space-y-4">${items.map(d => {
-          const dte = d.days_until_expiry ?? d.daysUntilExpiry ?? null;
-          const expiryColor = dte === null ? 'text-slate-400' : dte > 5 ? 'text-green-600 dark:text-green-400' : dte >= 2 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400';
-          const allergens = (d.allergens || []).map(a => `<span class="px-2 py-0.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md text-xs font-medium">${a}</span>`).join(' ');
-          const tags = (d.dietary_tags || []).map(t => `<span class="px-2 py-0.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-md text-xs font-medium">${t}</span>`).join(' ');
-          return `
-          <div class="glass rounded-2xl shadow-soft border border-slate-200/50 dark:border-slate-700/50 p-5 hover:shadow-large transition-shadow">
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-3 mb-2">
-                  <h3 class="font-bold text-slate-900 dark:text-white text-lg">${d.food_name || 'Food Donation'}</h3>
-                  ${statusBadge(d.status)}
-                </div>
-                <div class="flex flex-wrap gap-2 mt-2 text-sm text-slate-500 dark:text-slate-400">
-                  <span>📍 ${d.donor_zip || d.zip_code || '—'}</span>
-                  <span>📂 ${d.category || '—'}</span>
-                  <span>� ${d.quantity || '—'} ${d.unit || ''}</span>
-                  <span>🗄️ ${d.storage || '—'}</span>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 mt-2 text-sm">
-                  <span class="${expiryColor} font-semibold">📅 ${d.expiry_date || d.expiration_date || '—'}${dte !== null ? ` (${dte}d left)` : ''}</span>
-                </div>
-                ${allergens ? `<div class="flex flex-wrap gap-1 mt-2"><span class="text-xs text-slate-400 mr-1">Allergens:</span>${allergens}</div>` : ''}
-                ${tags ? `<div class="flex flex-wrap gap-1 mt-2"><span class="text-xs text-slate-400 mr-1">Diet:</span>${tags}</div>` : ''}
-              </div>
-              <button data-accept-id="${d.id}" class="accept-btn px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm shadow-medium hover:shadow-large transition-all whitespace-nowrap mt-2 sm:mt-0">
-                ✋ Accept
-              </button>
-            </div>
-          </div>`;
-        }).join('')}</div>`;
+      // Step 3: Render results
+      renderResults(items, source, results);
     } catch (err) {
+      const msg = err.message === ERROR_TYPES.AUTHENTICATION_REQUIRED
+        ? 'Login required — please log in first.'
+        : getErrorMessage(err);
       results.innerHTML = `
         <div class="text-center py-16">
           <div class="text-6xl mb-4">⚠️</div>
           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Could Not Reach Server</h3>
-          <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto">${err.message === 'AUTH' ? 'Login required — please log in first.' : 'Neither Spring nor Flask backend could be reached.'}</p>
-          ${err.message === 'AUTH' ? `<a href="{{site.baseurl}}/login" class="inline-flex mt-4 px-5 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl text-sm font-semibold transition-colors">Log In</a>` : ''}
+          <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto">${msg}</p>
+          ${err.message === ERROR_TYPES.AUTHENTICATION_REQUIRED ? `<a href="{{site.baseurl}}/login" class="inline-flex mt-4 px-5 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl text-sm font-semibold transition-colors">Log In</a>` : ''}
         </div>`;
     } finally {
       btn.disabled = false;
@@ -327,23 +342,28 @@ menu: nav/home.html
     }
   });
 
-  /* ── Delegated click → accept donation ── */
+  // ============================================
+  // ORCHESTRATOR: Handle accept button clicks
+  // ============================================
   document.getElementById('results-area').addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-accept-id]');
     if (!btn) return;
     const id = btn.dataset.acceptId;
+
     btn.disabled = true;
     btn.textContent = 'Accepting…';
-    try {
-      await springFetch(`${javaURI}/api/donations/${id}/accept`, { method: 'POST' });
-      btn.textContent = '✅ Accepted';
-      btn.classList.replace('from-green-500', 'from-gray-400');
-      btn.classList.replace('to-emerald-600', 'to-gray-500');
-      showToast('Donation accepted successfully!');
-    } catch (err) {
-      btn.disabled = false;
-      btn.textContent = '✋ Accept';
-      showToast(err.message, 'error');
-    }
+
+    acceptDonation(id)
+      .then(() => {
+        btn.textContent = '✅ Accepted';
+        btn.classList.replace('from-green-500', 'from-gray-400');
+        btn.classList.replace('to-emerald-600', 'to-gray-500');
+        showToast('Donation accepted successfully!');
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.textContent = '✋ Accept';
+        showToast(getErrorMessage(err), 'error');
+      });
   });
 </script>

@@ -95,8 +95,19 @@ menu: nav/home.html
 </div>
 
 <script type="module">
-  import { javaURI, pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  // ============================================
+  // SRP IMPORTS: Shared single-responsibility functions
+  // ============================================
+  import {
+    javaURI, pythonURI,
+    springFetch, flaskFetch,
+    showToast, errorPlaceholder, sourceBadge, getErrorMessage,
+    normalizeDonationList
+  } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
+  // ============================================
+  // CONFIGURATION: Community color palette
+  // ============================================
   const COMMUNITY_COLORS = [
     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -108,98 +119,160 @@ menu: nav/home.html
     'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
   ];
 
-  async function springFetch(url, opts = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-    try {
-      const res = await fetch(url, { ...fetchOptions, ...opts, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        throw new Error(body || `HTTP ${res.status}`);
+  // ============================================
+  // WORKER: Fetch graph data from Spring
+  // Returns: graphData object
+  // ============================================
+  async function fetchSpringGraph() {
+    return springFetch(`${javaURI}/api/donations/graph`);
+  }
+
+  // ============================================
+  // WORKER: Build graph data from Flask donations (fallback)
+  // Returns: graphData object
+  // ============================================
+  async function buildFlaskGraph() {
+    const raw = await flaskFetch(`${pythonURI}/api/donations`);
+    const donations = normalizeDonationList(raw);
+
+    const donors = new Set();
+    const volunteers = new Set();
+    const edges = [];
+    donations.forEach(d => {
+      const donor = d.donor_name || d.donorName || 'anonymous';
+      donors.add(donor);
+      if (d.volunteer_name) {
+        volunteers.add(d.volunteer_name);
+        edges.push([donor, d.volunteer_name]);
       }
-      return res.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.name === 'AbortError') throw new Error('Server took too long to respond.');
-      throw err;
+    });
+
+    const allUsers = [...new Set([...donors, ...volunteers])];
+
+    // Build simple communities (donors and their connected volunteers)
+    const communities = [];
+    const assigned = new Set();
+    allUsers.forEach(u => {
+      if (assigned.has(u)) return;
+      const group = [u];
+      assigned.add(u);
+      edges.forEach(([a, b]) => {
+        if (a === u && !assigned.has(b)) { group.push(b); assigned.add(b); }
+        if (b === u && !assigned.has(a)) { group.push(a); assigned.add(a); }
+      });
+      communities.push(group);
+    });
+
+    // Build influence ranking (count connections)
+    const influence = {};
+    allUsers.forEach(u => { influence[u] = 0; });
+    edges.forEach(([a, b]) => { influence[a] = (influence[a] || 0) + 1; influence[b] = (influence[b] || 0) + 1; });
+
+    return {
+      summary: { nodes: allUsers.length, edges: edges.length, communities: communities.length },
+      communities: communities.filter(g => g.length > 1),
+      influenceRanking: influence
+    };
+  }
+
+  // ============================================
+  // RESPONSIBILITY: Render summary counters
+  // Parameters: summary (object)
+  // ============================================
+  function renderSummary(summary) {
+    document.getElementById('net-nodes').textContent = summary.nodes ?? '—';
+    document.getElementById('net-edges').textContent = summary.edges ?? '—';
+    document.getElementById('net-communities').textContent = summary.communities ?? '—';
+  }
+
+  // ============================================
+  // RESPONSIBILITY: Render communities list
+  // Parameters: communities (array), source (string), container (Element)
+  // ============================================
+  function renderCommunities(communities, source, container) {
+    const badge = `<div class="mb-4">${sourceBadge(source)}</div>`;
+    if (communities.length === 0) {
+      container.innerHTML = badge + '<p class="text-slate-400 text-sm text-center">No communities detected yet.</p>';
+      return;
     }
+    container.innerHTML = badge + communities.map((group, i) => {
+      const color = COMMUNITY_COLORS[i % COMMUNITY_COLORS.length];
+      return `
+        <div class="mb-4">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Community ${i + 1} — ${group.length} member${group.length !== 1 ? 's' : ''}</p>
+          <div class="flex flex-wrap gap-2">
+            ${group.map(email => `<span class="px-3 py-1 rounded-lg text-xs font-semibold ${color}">${email}</span>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
   }
 
-  function showToast(msg, type = 'success') {
-    const el = document.getElementById('toast');
-    const inner = document.getElementById('toast-inner');
-    inner.className = `px-5 py-3 rounded-xl text-white text-sm font-semibold shadow-large flex items-center gap-2 ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
-    inner.textContent = msg;
-    el.classList.remove('hidden');
-    setTimeout(() => el.classList.add('hidden'), 4000);
+  // ============================================
+  // RESPONSIBILITY: Render influence ranking
+  // Parameters: influence (object), container (Element)
+  // ============================================
+  function renderInfluence(influence, container) {
+    const entries = Object.entries(influence).sort((a, b) => b[1] - a[1]);
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="p-6 text-center text-slate-400 text-sm">No influence data yet.</div>';
+      return;
+    }
+    container.innerHTML = entries.map(([email, score], i) => `
+      <div class="flex items-center gap-4 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+        <span class="w-8 text-center font-bold text-slate-400">${i + 1}</span>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">${email.charAt(0).toUpperCase()}</div>
+        <div class="flex-1 min-w-0"><p class="font-medium text-slate-900 dark:text-white truncate text-sm">${email}</p></div>
+        <span class="text-sm font-bold gradient-text">${score}</span>
+      </div>
+    `).join('');
   }
 
-  function errorPlaceholder(msg) {
-    return `<div class="text-center py-8"><div class="text-4xl mb-2">⚠️</div><p class="text-slate-500 dark:text-slate-400 text-sm">${msg}</p><button onclick="location.reload()" class="mt-3 px-4 py-1.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-xs font-semibold transition-colors">Retry</button></div>`;
+  // ============================================
+  // WORKER: Fetch recommendations from Spring
+  // Parameters: email (string)
+  // Returns: array
+  // ============================================
+  async function fetchRecommendations(email) {
+    return springFetch(`${javaURI}/api/donations/graph/recommendations?email=${encodeURIComponent(email)}&maxDepth=2`);
   }
 
-  /* ── Load graph data — try Spring first, fallback to Flask ── */
+  // ============================================
+  // RESPONSIBILITY: Render recommendation results
+  // Parameters: list (array), email (string), container (Element)
+  // ============================================
+  function renderRecommendations(list, email, container) {
+    if (list.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-6">
+          <p class="text-slate-500 dark:text-slate-400 text-sm">No connections found within 2 hops for <strong>${email}</strong>.</p>
+        </div>`;
+      return;
+    }
+    container.innerHTML = `
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">${list.length} connection${list.length !== 1 ? 's' : ''} found for <strong class="text-slate-700 dark:text-slate-300">${email}</strong>:</p>
+      <div class="flex flex-wrap gap-2">
+        ${list.map(u => `<span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-lg text-sm font-medium">${u}</span>`).join('')}
+      </div>`;
+  }
+
+  // ============================================
+  // ORCHESTRATOR: Load graph on page load — Spring → Flask fallback
+  // ============================================
   document.addEventListener('DOMContentLoaded', async () => {
+    const commArea = document.getElementById('communities-area');
+    const infArea = document.getElementById('influence-area');
     let graphData = null;
     let source = '';
 
-    // 1. Try Spring graph endpoint (required route)
+    // Step 1: Try Spring graph endpoint
     try {
-      graphData = await springFetch(`${javaURI}/api/donations/graph`);
+      graphData = await fetchSpringGraph();
       source = 'spring';
     } catch (springErr) {
       console.log('Spring graph unavailable, building from Flask…', springErr.message);
-
-      // 2. Fallback: build a simple graph from Flask donations
+      // Step 2: Fallback — build graph from Flask
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const res = await fetch(`${pythonURI}/api/donations`, { ...fetchOptions, signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const raw = await res.json();
-        const donations = Array.isArray(raw) ? raw : (Array.isArray(raw?.donations) ? raw.donations : []);
-
-        // Build a simple network from Flask donation data
-        const donors = new Set();
-        const volunteers = new Set();
-        const edges = [];
-        donations.forEach(d => {
-          const donor = d.donor_name || d.donorName || 'anonymous';
-          donors.add(donor);
-          if (d.volunteer_name) {
-            volunteers.add(d.volunteer_name);
-            edges.push([donor, d.volunteer_name]);
-          }
-        });
-
-        const allUsers = [...new Set([...donors, ...volunteers])];
-
-        // Build simple communities (donors and their connected volunteers)
-        const communities = [];
-        const assigned = new Set();
-        allUsers.forEach(u => {
-          if (assigned.has(u)) return;
-          const group = [u];
-          assigned.add(u);
-          edges.forEach(([a, b]) => {
-            if (a === u && !assigned.has(b)) { group.push(b); assigned.add(b); }
-            if (b === u && !assigned.has(a)) { group.push(a); assigned.add(a); }
-          });
-          communities.push(group);
-        });
-
-        // Build influence ranking (count connections)
-        const influence = {};
-        allUsers.forEach(u => { influence[u] = 0; });
-        edges.forEach(([a, b]) => { influence[a] = (influence[a] || 0) + 1; influence[b] = (influence[b] || 0) + 1; });
-
-        graphData = {
-          summary: { nodes: allUsers.length, edges: edges.length, communities: communities.length },
-          communities: communities.filter(g => g.length > 1),
-          influenceRanking: influence
-        };
+        graphData = await buildFlaskGraph();
         source = 'flask';
       } catch (flaskErr) {
         console.log('Flask also unavailable');
@@ -207,67 +280,25 @@ menu: nav/home.html
     }
 
     if (!graphData) {
-      document.getElementById('communities-area').innerHTML = errorPlaceholder('Neither Spring nor Flask backend could be reached.');
-      document.getElementById('influence-area').innerHTML = errorPlaceholder('Server unavailable');
+      commArea.innerHTML = errorPlaceholder('Neither Spring nor Flask backend could be reached.');
+      infArea.innerHTML = errorPlaceholder('Server unavailable');
       return;
     }
 
-    // Show source badge
-    const commArea = document.getElementById('communities-area');
-    const infArea = document.getElementById('influence-area');
-
+    // Step 3: Render all sections
     try {
-      const summary = graphData.summary || {};
-
-      // Summary counters
-      document.getElementById('net-nodes').textContent = summary.nodes ?? '—';
-      document.getElementById('net-edges').textContent = summary.edges ?? '—';
-      document.getElementById('net-communities').textContent = summary.communities ?? '—';
-
-      // Source badge
-      const sourceBadge = `<div class="mb-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${source === 'spring' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' : 'bg-sky-100 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'}">${source === 'spring' ? '☕ Java Spring' : '🐍 Flask'}</span></div>`;
-
-      // Communities
-      const communities = graphData.communities || [];
-      if (communities.length === 0) {
-        commArea.innerHTML = sourceBadge + '<p class="text-slate-400 text-sm text-center">No communities detected yet.</p>';
-      } else {
-        commArea.innerHTML = sourceBadge + communities.map((group, i) => {
-          const color = COMMUNITY_COLORS[i % COMMUNITY_COLORS.length];
-          return `
-            <div class="mb-4">
-              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Community ${i + 1} — ${group.length} member${group.length !== 1 ? 's' : ''}</p>
-              <div class="flex flex-wrap gap-2">
-                ${group.map(email => `<span class="px-3 py-1 rounded-lg text-xs font-semibold ${color}">${email}</span>`).join('')}
-              </div>
-            </div>`;
-        }).join('');
-      }
-
-      // Influence Ranking
-      const influence = graphData.influenceRanking || {};
-      const entries = Object.entries(influence).sort((a, b) => b[1] - a[1]);
-      if (entries.length === 0) {
-        infArea.innerHTML = '<div class="p-6 text-center text-slate-400 text-sm">No influence data yet.</div>';
-      } else {
-        infArea.innerHTML = entries.map(([email, score], i) => `
-          <div class="flex items-center gap-4 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-            <span class="w-8 text-center font-bold text-slate-400">${i + 1}</span>
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">${email.charAt(0).toUpperCase()}</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-medium text-slate-900 dark:text-white truncate text-sm">${email}</p>
-            </div>
-            <span class="text-sm font-bold gradient-text">${score}</span>
-          </div>
-        `).join('');
-      }
+      renderSummary(graphData.summary || {});
+      renderCommunities(graphData.communities || [], source, commArea);
+      renderInfluence(graphData.influenceRanking || {}, infArea);
     } catch (err) {
       commArea.innerHTML = errorPlaceholder(err.message);
       infArea.innerHTML = errorPlaceholder(err.message);
     }
   });
 
-  /* ── Recommendation search ── */
+  // ============================================
+  // ORCHESTRATOR: Handle recommendation search form
+  // ============================================
   document.getElementById('rec-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('rec-email').value.trim();
@@ -278,26 +309,17 @@ menu: nav/home.html
     btn.disabled = true;
     btn.textContent = 'Searching…';
 
-    try {
-      const recs = await springFetch(`${javaURI}/api/donations/graph/recommendations?email=${encodeURIComponent(email)}&maxDepth=2`);
-      const list = Array.isArray(recs) ? recs : [];
-      if (list.length === 0) {
-        results.innerHTML = `
-          <div class="text-center py-6">
-            <p class="text-slate-500 dark:text-slate-400 text-sm">No connections found within 2 hops for <strong>${email}</strong>.</p>
-          </div>`;
-      } else {
-        results.innerHTML = `
-          <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">${list.length} connection${list.length !== 1 ? 's' : ''} found for <strong class="text-slate-700 dark:text-slate-300">${email}</strong>:</p>
-          <div class="flex flex-wrap gap-2">
-            ${list.map(u => `<span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-lg text-sm font-medium">${u}</span>`).join('')}
-          </div>`;
-      }
-    } catch (err) {
-      results.innerHTML = `<p class="text-red-600 dark:text-red-400 text-sm">Error: ${err.message}</p>`;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Find Connections';
-    }
+    fetchRecommendations(email)
+      .then(recs => {
+        const list = Array.isArray(recs) ? recs : [];
+        renderRecommendations(list, email, results);
+      })
+      .catch(err => {
+        results.innerHTML = `<p class="text-red-600 dark:text-red-400 text-sm">Error: ${getErrorMessage(err)}</p>`;
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Find Connections';
+      });
   });
 </script>

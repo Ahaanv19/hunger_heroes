@@ -521,9 +521,18 @@ menu: nav/home.html
 </div>
 
 <script type="module">
-  import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  // ============================================
+  // SRP IMPORTS: Shared single-responsibility functions
+  // ============================================
+  import {
+    pythonURI, javaURI, fetchOptions,
+    springFetch, flaskFetch,
+    generateLocalId, saveLocalDonation
+  } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
-  // ---------- FOOD PRESETS: auto-fill category, storage, allergens, dietary ----------
+  // ============================================
+  // CONFIGURATION: Food presets for auto-fill
+  // ============================================
   const foodPresets = {
     // Canned Goods
     'Canned Tomato Soup':      { category: 'canned', storage: 'room-temp', allergens: ['gluten'], dietary: ['vegetarian'] },
@@ -599,32 +608,29 @@ menu: nav/home.html
     'Canned Ravioli':          { category: 'prepared-meals', storage: 'room-temp', allergens: ['gluten', 'dairy'], dietary: ['vegetarian'] },
   };
 
-  // Apply preset auto-fill or clear for "other"
+  // ============================================
+  // RESPONSIBILITY: Apply food preset auto-fill or clear for "other"
+  // Parameters: foodName (string)
+  // ============================================
   function applyFoodPreset(foodName) {
     const preset = foodPresets[foodName];
-    const isOther = (foodName === 'other' || !preset);
     const customGroup = document.getElementById('custom-food-name-group');
     const customInput = document.getElementById('food-name-custom');
     const hiddenInput = document.getElementById('food-name');
 
     if (foodName === 'other') {
-      // Show custom input, clear all auto-fill fields
       customGroup.classList.remove('hidden');
       customInput.required = true;
       customInput.focus();
       hiddenInput.value = '';
       clearAutoFillFields();
     } else if (preset) {
-      // Hide custom input, set hidden food name, auto-fill fields
       customGroup.classList.add('hidden');
       customInput.required = false;
       customInput.value = '';
       hiddenInput.value = foodName;
-      // Category
       document.getElementById('food-category').value = preset.category;
-      // Storage
       document.getElementById('storage-type').value = preset.storage;
-      // Allergens — uncheck all, then check matching
       document.querySelectorAll('input[name="allergens"]').forEach(cb => { cb.checked = false; });
       if (preset.allergens.length === 0) {
         const noneCb = document.querySelector('input[name="allergens"][value="none"]');
@@ -635,13 +641,11 @@ menu: nav/home.html
           if (cb) cb.checked = true;
         });
       }
-      // Dietary tags — uncheck all, then check matching
       document.querySelectorAll('input[name="dietary"]').forEach(cb => { cb.checked = false; });
       preset.dietary.forEach(d => {
         const cb = document.querySelector(`input[name="dietary"][value="${d}"]`);
         if (cb) cb.checked = true;
       });
-      // Flash a brief confirmation
       showAutoFillToast(foodName);
     } else {
       customGroup.classList.add('hidden');
@@ -649,6 +653,9 @@ menu: nav/home.html
     }
   }
 
+  // ============================================
+  // RESPONSIBILITY: Clear auto-fill form fields
+  // ============================================
   function clearAutoFillFields() {
     document.getElementById('food-category').value = '';
     document.getElementById('storage-type').value = '';
@@ -656,6 +663,10 @@ menu: nav/home.html
     document.querySelectorAll('input[name="dietary"]').forEach(cb => { cb.checked = false; });
   }
 
+  // ============================================
+  // RESPONSIBILITY: Show auto-fill confirmation toast
+  // Parameters: foodName (string)
+  // ============================================
   function showAutoFillToast(foodName) {
     const toast = document.getElementById('autofill-toast');
     document.getElementById('autofill-toast-msg').textContent = `Auto-filled fields for "${foodName}"`;
@@ -663,14 +674,12 @@ menu: nav/home.html
     setTimeout(() => toast.classList.add('hidden'), 2500);
   }
 
-  // ---------- STEP NAVIGATION ----------
+  // ============================================
+  // STEP NAVIGATION: Multi-step form management
+  // ============================================
   let currentStep = 1;
   const totalSteps = 3;
-  const stepLabels = {
-    1: 'Food Details',
-    2: 'Safety & Handling',
-    3: 'Donor Info & Review'
-  };
+  const stepLabels = { 1: 'Food Details', 2: 'Safety & Handling', 3: 'Donor Info & Review' };
 
   window.nextStep = function(step) {
     if (!validateStep(currentStep)) return;
@@ -680,21 +689,27 @@ menu: nav/home.html
     showStep(step);
   };
 
+  // ============================================
+  // RESPONSIBILITY: Show a specific form step
+  // Parameters: step (number)
+  // ============================================
   function showStep(step) {
     document.querySelectorAll('.donation-step').forEach(el => el.classList.add('hidden'));
     document.getElementById(`step-${step}`).classList.remove('hidden');
     currentStep = step;
-    // Update progress
     const pct = Math.round((step / totalSteps) * 100);
     document.getElementById('progress-bar').style.width = pct + '%';
     document.getElementById('step-percent').textContent = pct + '%';
     document.getElementById('step-label').textContent = `Step ${step} of ${totalSteps} — ${stepLabels[step]}`;
-    // Update summary on step 3
     if (step === 3) updateSummary();
-    // Scroll to top of form
     window.scrollTo({ top: 200, behavior: 'smooth' });
   }
 
+  // ============================================
+  // RESPONSIBILITY: Validate a form step
+  // Parameters: step (number)
+  // Returns: boolean
+  // ============================================
   function validateStep(step) {
     let valid = true;
     const required = document.querySelectorAll(`#step-${step} [required]`);
@@ -702,15 +717,10 @@ menu: nav/home.html
       if (!input.value.trim()) {
         input.classList.add('ring-2', 'ring-red-500', 'border-red-500');
         valid = false;
-        input.addEventListener('input', () => {
-          input.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
-        }, { once: true });
-        input.addEventListener('change', () => {
-          input.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
-        }, { once: true });
+        input.addEventListener('input', () => input.classList.remove('ring-2', 'ring-red-500', 'border-red-500'), { once: true });
+        input.addEventListener('change', () => input.classList.remove('ring-2', 'ring-red-500', 'border-red-500'), { once: true });
       }
     });
-    // Extra check: ensure food-name hidden input has a value on step 1
     if (step === 1) {
       const foodName = document.getElementById('food-name').value.trim();
       if (!foodName) {
@@ -727,6 +737,10 @@ menu: nav/home.html
     return valid;
   }
 
+  // ============================================
+  // RESPONSIBILITY: Show error toast
+  // Parameters: msg (string)
+  // ============================================
   function showError(msg) {
     const toast = document.getElementById('error-toast');
     document.getElementById('error-toast-msg').textContent = msg;
@@ -734,6 +748,9 @@ menu: nav/home.html
     setTimeout(() => toast.classList.add('hidden'), 3500);
   }
 
+  // ============================================
+  // RESPONSIBILITY: Update review summary on step 3
+  // ============================================
   function updateSummary() {
     const name = document.getElementById('food-name').value;
     const cat = document.getElementById('food-category');
@@ -760,39 +777,12 @@ menu: nav/home.html
     `;
   }
 
-  // ---------- AUTO-FILL DONOR INFO FROM AUTH ----------
-  document.addEventListener('DOMContentLoaded', async () => {
-    // Set min date for expiry to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('food-expiry').setAttribute('min', today);
-
-    // Food name dropdown -> auto-fill
-    document.getElementById('food-name-select').addEventListener('change', function() {
-      applyFoodPreset(this.value);
-    });
-
-    // Custom food name input -> sync to hidden input
-    document.getElementById('food-name-custom').addEventListener('input', function() {
-      document.getElementById('food-name').value = this.value.trim();
-    });
-
-    try {
-      const res = await fetch(`${pythonURI}/api/user`, fetchOptions);
-      if (res.ok) {
-        const user = await res.json();
-        if (user.name) document.getElementById('donor-name').value = user.name;
-        if (user.email) document.getElementById('donor-email').value = user.email;
-      }
-    } catch (e) {
-      console.log('Not logged in or fetch failed');
-    }
-  });
-
-  // ---------- SUBMIT -> Generate Barcode ----------
-  window.submitDonation = async function() {
-    if (!validateStep(3)) return;
-
-    const donationData = {
+  // ============================================
+  // RESPONSIBILITY: Collect form data into donation object
+  // Returns: object — donation payload
+  // ============================================
+  function collectDonationData() {
+    return {
       food_name:     document.getElementById('food-name').value.trim(),
       category:      document.getElementById('food-category').value,
       quantity:       parseInt(document.getElementById('food-quantity').value),
@@ -809,57 +799,97 @@ menu: nav/home.html
       special_instructions: document.getElementById('special-instructions').value.trim(),
       created_at:    new Date().toISOString()
     };
+  }
 
-    // Try to POST to both backends; use whichever responds with an ID
+  // ============================================
+  // WORKER: Post donation to Spring backend
+  // Parameters: data (object)
+  // Returns: id (string) or null
+  // ============================================
+  async function postToSpring(data) {
+    const result = await springFetch(`${javaURI}/api/donations`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    console.log('✅ Spring donation created:', result.id || result.donation_id);
+    return result.id || result.donation_id || null;
+  }
+
+  // ============================================
+  // WORKER: Post donation to Flask backend
+  // Parameters: data (object)
+  // Returns: id (string) or null
+  // ============================================
+  async function postToFlask(data) {
+    const result = await flaskFetch(`${pythonURI}/api/donations`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    console.log('✅ Flask donation created');
+    return result.id || result.donation_id || null;
+  }
+
+  // ============================================
+  // ORCHESTRATOR: Submit donation — try both backends, localStorage fallback
+  // ============================================
+  window.submitDonation = async function() {
+    if (!validateStep(3)) return;
+
+    const donationData = collectDonationData();
     let donationId = null;
 
-    // 1. Try Spring first (required route)
-    try {
-      const springRes = await fetch(`${javaURI}/api/donations`, {
-        ...fetchOptions,
-        method: 'POST',
-        body: JSON.stringify(donationData)
-      });
-      if (springRes.ok) {
-        const result = await springRes.json();
-        donationId = result.id || result.donation_id;
-        console.log('✅ Spring donation created:', donationId);
-      }
-    } catch (e) {
-      console.log('Spring unavailable for create:', e.message);
-    }
+    // Step 1: Try Spring
+    try { donationId = await postToSpring(donationData); }
+    catch (e) { console.log('Spring unavailable for create:', e.message); }
 
-    // 2. Also save to Flask (so both databases stay in sync)
+    // Step 2: Also save to Flask (keep databases in sync)
     try {
-      const res = await fetch(`${pythonURI}/api/donations`, {
-        ...fetchOptions,
-        method: 'POST',
-        body: JSON.stringify(donationData)
-      });
-      if (res.ok) {
-        const result = await res.json();
-        if (!donationId) donationId = result.id || result.donation_id;
-        console.log('✅ Flask donation created');
-      }
-    } catch (e) {
-      console.log('Flask unavailable for create:', e.message);
-    }
+      const flaskId = await postToFlask(donationData);
+      if (!donationId) donationId = flaskId;
+    } catch (e) { console.log('Flask unavailable for create:', e.message); }
 
-    // Fallback: client-side ID
-    if (!donationId) {
-      donationId = 'HH-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-    }
+    // Step 3: Fallback — generate client-side ID
+    if (!donationId) donationId = generateLocalId();
 
     donationData.id = donationId;
     donationData.status = 'posted';
 
-    // Save to localStorage as backup
-    const donations = JSON.parse(localStorage.getItem('hh_donations') || '[]');
-    donations.push(donationData);
-    localStorage.setItem('hh_donations', JSON.stringify(donations));
+    // Step 4: Save to localStorage as backup
+    saveLocalDonation(donationData);
 
-    // Redirect to barcode page with data
+    // Step 5: Redirect to barcode page
     sessionStorage.setItem('hh_current_donation', JSON.stringify(donationData));
     window.location.href = `{{site.baseurl}}/donate/barcode?id=${encodeURIComponent(donationId)}`;
   };
+
+  // ============================================
+  // ORCHESTRATOR: Page init — set min date, auto-fill from auth, bind events
+  // ============================================
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Set min date for expiry to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('food-expiry').setAttribute('min', today);
+
+    // Food name dropdown → auto-fill
+    document.getElementById('food-name-select').addEventListener('change', function() {
+      applyFoodPreset(this.value);
+    });
+
+    // Custom food name input → sync to hidden input
+    document.getElementById('food-name-custom').addEventListener('input', function() {
+      document.getElementById('food-name').value = this.value.trim();
+    });
+
+    // Auto-fill donor info from auth
+    try {
+      const res = await fetch(`${pythonURI}/api/user`, fetchOptions);
+      if (res.ok) {
+        const user = await res.json();
+        if (user.name) document.getElementById('donor-name').value = user.name;
+        if (user.email) document.getElementById('donor-email').value = user.email;
+      }
+    } catch (e) {
+      console.log('Not logged in or fetch failed');
+    }
+  });
 </script>
