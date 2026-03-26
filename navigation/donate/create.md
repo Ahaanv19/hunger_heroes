@@ -486,8 +486,9 @@ menu: nav/home.html
               </svg>
               Back
             </button>
-            <button type="button" onclick="submitDonation()"
-              class="inline-flex items-center gap-2 px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all\">
+            <button id="submit-donation-btn" type="button" onclick="submitDonation()"
+              data-loading-text="Generating..."
+              class="inline-flex items-center gap-2 px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
               </svg>
@@ -510,6 +511,11 @@ menu: nav/home.html
   </div>
 </div>
 
+<!-- Generic Toast (used by shared showToast) -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+  <div id="toast-inner" class="px-5 py-3 rounded-xl text-white text-sm font-semibold shadow-large flex items-center gap-2"></div>
+</div>
+
 <!-- Auto-fill Toast -->
 <div id="autofill-toast" class="fixed bottom-6 right-6 z-50 hidden">
   <div class="flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-lg shadow-lg animate-slide-up">
@@ -526,7 +532,7 @@ menu: nav/home.html
   // ============================================
   import {
     pythonURI, javaURI, fetchOptions,
-    springFetch, flaskFetch,
+    springFetch, flaskFetch, dualPost, setLoading, showToast,
     generateLocalId, saveLocalDonation
   } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
@@ -834,32 +840,37 @@ menu: nav/home.html
   // ============================================
   window.submitDonation = async function() {
     if (!validateStep(3)) return;
+    const btn = document.getElementById('submit-donation-btn');
+    setLoading(btn, true);
 
     const donationData = collectDonationData();
-    let donationId = null;
-
-    // Step 1: Try Spring
-    try { donationId = await postToSpring(donationData); }
-    catch (e) { console.log('Spring unavailable for create:', e.message); }
-
-    // Step 2: Also save to Flask (keep databases in sync)
     try {
-      const flaskId = await postToFlask(donationData);
-      if (!donationId) donationId = flaskId;
-    } catch (e) { console.log('Flask unavailable for create:', e.message); }
+      // dualPost will try Spring then Flask and return {id, source}
+      const { id, source } = await dualPost('/api/donations', donationData);
+      const donationId = id || generateLocalId();
+      donationData.id = donationId;
+      donationData.status = 'posted';
 
-    // Step 3: Fallback — generate client-side ID
-    if (!donationId) donationId = generateLocalId();
+      // Persist local backup
+      saveLocalDonation(donationData);
+      sessionStorage.setItem('hh_current_donation', JSON.stringify(donationData));
 
-    donationData.id = donationId;
-    donationData.status = 'posted';
-
-    // Step 4: Save to localStorage as backup
-    saveLocalDonation(donationData);
-
-    // Step 5: Redirect to barcode page
-    sessionStorage.setItem('hh_current_donation', JSON.stringify(donationData));
-    window.location.href = `{{site.baseurl}}/donate/barcode?id=${encodeURIComponent(donationId)}`;
+      showToast('Donation created — label ready', 'success');
+      // Redirect to barcode label
+      window.location.href = `{{site.baseurl}}/donate/barcode?id=${encodeURIComponent(donationId)}`;
+    } catch (e) {
+      console.error('Create failed:', e);
+      showToast('Failed to create donation. Saved locally.', 'error');
+      // fallback: local id and save
+      const localId = generateLocalId();
+      donationData.id = localId;
+      donationData.status = 'posted';
+      saveLocalDonation(donationData);
+      sessionStorage.setItem('hh_current_donation', JSON.stringify(donationData));
+      window.location.href = `{{site.baseurl}}/donate/barcode?id=${encodeURIComponent(localId)}`;
+    } finally {
+      setLoading(btn, false);
+    }
   };
 
   // ============================================

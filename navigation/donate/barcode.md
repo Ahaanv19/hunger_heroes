@@ -183,7 +183,7 @@ menu: nav/home.html
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
 
 <script type="module">
-  import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+  import { pythonURI, fetchOptions, fetchLabelBlob } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
   const CATEGORY_MAP = {
     'canned': '🥫 Canned Goods',
@@ -400,6 +400,31 @@ menu: nav/home.html
   // ---------- DOWNLOAD AS IMAGE ----------
   window.downloadLabel = async function() {
     const label = document.getElementById('barcode-label');
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || document.getElementById('label-id')?.textContent;
+    // Try server-provided label first
+    if (id) {
+      try {
+        const blob = await fetchLabelBlob(id);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          // Try to infer file extension from blob type
+          const ext = (blob.type && blob.type.includes('pdf')) ? 'pdf' : 'png';
+          a.download = `hunger-heroes-label-${id}.${ext}`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          return;
+        }
+      } catch (e) {
+        console.log('Server label not available, falling back to client image', e.message);
+      }
+    }
+
+    // Fallback: client-side capture
     try {
       const canvas = await html2canvas(label, { 
         scale: 3, 

@@ -74,7 +74,8 @@ export async function springFetch(url, opts = {}) {
       const body = await res.text().catch(() => '');
       throw new Error(`${ERROR_TYPES.HTTP_ERROR}_${res.status}`);
     }
-    return res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : {};
   } catch (err) {
     clearTimeout(timeoutId);
     if (err.name === 'AbortError') throw new Error(ERROR_TYPES.TIMEOUT);
@@ -94,7 +95,8 @@ export async function flaskFetch(url, opts = {}) {
     const res = await fetch(url, { ...fetchOptions, ...opts, signal: controller.signal });
     clearTimeout(timeoutId);
     if (!res.ok) throw new Error(`${ERROR_TYPES.HTTP_ERROR}_${res.status}`);
-    return res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : {};
   } catch (err) {
     clearTimeout(timeoutId);
     if (err.name === 'AbortError') throw new Error(ERROR_TYPES.TIMEOUT);
@@ -415,3 +417,95 @@ export const CATEGORY_EMOJIS = {
 
 // Re-export URIs for pages that need them
 export { javaURI, pythonURI, fetchOptions };
+
+// ============================================
+// NETWORK HELPERS: status update, assign volunteer, label download
+// ============================================
+
+/**
+ * RESPONSIBILITY: Patch donation status with Spring → Flask fallback
+ * Parameters: id (string), payload (object)
+ * Returns: parsed JSON response
+ */
+export async function patchStatus(id, payload = {}) {
+  const endpoint = `${javaURI}/api/donations/${encodeURIComponent(id)}/status`;
+  try {
+    const res = await springFetch(endpoint, { method: 'PATCH', body: JSON.stringify(payload) });
+    return res;
+  } catch (e) {
+    // try Flask fallback
+    const flaskUrl = `${pythonURI}/api/donations/${encodeURIComponent(id)}/status`;
+    try {
+      return await flaskFetch(flaskUrl, { method: 'PATCH', body: JSON.stringify(payload) });
+    } catch (fe) {
+      throw new Error(ERROR_TYPES.BACKEND_UNAVAILABLE);
+    }
+  }
+}
+
+
+/**
+ * RESPONSIBILITY: Assign a volunteer to a donation (Spring → Flask fallback)
+ * Parameters: id (string), volunteer (object) — e.g. { volunteer_name }
+ * Returns: parsed JSON response
+ */
+export async function assignVolunteer(id, volunteer) {
+  const endpoint = `${javaURI}/api/donations/${encodeURIComponent(id)}/assign-volunteer`;
+  try {
+    const res = await springFetch(endpoint, { method: 'POST', body: JSON.stringify(volunteer) });
+    return res;
+  } catch (e) {
+    const flaskUrl = `${pythonURI}/api/donations/${encodeURIComponent(id)}/assign-volunteer`;
+    try {
+      return await flaskFetch(flaskUrl, { method: 'POST', body: JSON.stringify(volunteer) });
+    } catch (fe) {
+      throw new Error(ERROR_TYPES.BACKEND_UNAVAILABLE);
+    }
+  }
+}
+
+
+/**
+ * RESPONSIBILITY: Try to fetch a server-rendered label (PNG/PDF) as Blob
+ * Parameters: id (string)
+ * Returns: Blob or throws
+ */
+export async function fetchLabelBlob(id) {
+  // Try Spring
+  try {
+    const res = await fetch(`${javaURI}/api/donations/${encodeURIComponent(id)}/label`, { ...fetchOptions });
+    if (res.ok) return await res.blob();
+  } catch (e) {
+    console.log('Spring label fetch failed', e.message);
+  }
+
+  // Try Flask
+  try {
+    const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}/label`, { ...fetchOptions });
+    if (res.ok) return await res.blob();
+  } catch (e) {
+    console.log('Flask label fetch failed', e.message);
+  }
+
+  throw new Error(ERROR_TYPES.BACKEND_UNAVAILABLE);
+}
+
+
+/**
+ * RESPONSIBILITY: Toggle a simple loading state for a button element
+ * Parameters: el (HTMLElement|string), loading (bool)
+ */
+export function setLoading(el, loading = true) {
+  let node = null;
+  if (typeof el === 'string') node = document.querySelector(el);
+  else node = el;
+  if (!node) return;
+  if (loading) {
+    node.dataset.origHtml = node.innerHTML;
+    node.disabled = true;
+    node.innerHTML = `<svg class="animate-spin w-4 h-4 mr-2 inline-block" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="CurrentColor" stroke-width="4" fill="none" opacity="0.25"></circle><path d="M4 12a8 8 0 018-8" stroke="CurrentColor" stroke-width="4" fill="none"></path></svg> ${node.dataset.loadingText || 'Loading...'}`;
+  } else {
+    node.disabled = false;
+    if (node.dataset.origHtml) node.innerHTML = node.dataset.origHtml;
+  }
+}

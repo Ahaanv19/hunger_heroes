@@ -163,7 +163,8 @@ menu: nav/home.html
     pythonURI, javaURI, fetchOptions,
     springFetch, flaskFetch,
     urgencyBadge, computeUrgency,
-    getLocalDonations, showToast, getErrorMessage
+    getLocalDonations, showToast, getErrorMessage,
+    patchStatus, assignVolunteer as apiAssignVolunteer, fetchLabelBlob
   } from '{{site.baseurl}}/assets/js/api/donationApi.js';
 
   // ============================================
@@ -190,6 +191,19 @@ menu: nav/home.html
     'expired':    'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
     'cancelled':  'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400',
   };
+
+  // Backend returns: active, accepted, in-transit, delivered
+  // Scan page uses: posted, claimed, in_transit, delivered, confirmed
+  const FROM_BACKEND = {
+    'active': 'posted', 'accepted': 'claimed',
+    'in-transit': 'in_transit', 'in transit': 'in_transit',
+  };
+  const TO_BACKEND = {
+    'posted': 'active', 'claimed': 'accepted',
+    'in_transit': 'in-transit', 'confirmed': 'delivered',
+  };
+  function fromBackendStatus(s) { return FROM_BACKEND[(s || '').toLowerCase()] || s; }
+  function toBackendStatus(s) { return TO_BACKEND[s] || s; }
 
   let currentDonation = null;
   let html5QrCode = null;
@@ -394,6 +408,9 @@ menu: nav/home.html
     // Merge urgency warnings (from hour-based system)
     const urgencyWarns = buildUrgencyWarnings(donation);
     warnings = [...warnings, ...urgencyWarns];
+
+    // Normalize backend status vocabulary → scan-page vocabulary
+    donation.status = fromBackendStatus(donation.status);
 
     currentDonation = donation;
     showWarnings(warnings);
@@ -605,21 +622,13 @@ menu: nav/home.html
   // ============================================
   async function executeStatusTransition(newStatus) {
     const id = currentDonation.id;
-    const payload = { new_status: newStatus };
+    // Convert scan-page status → backend status vocabulary before sending
+    const payload = { new_status: toBackendStatus(newStatus) };
     if (currentDonation.volunteer?.volunteer_name) {
       payload.volunteer_name = currentDonation.volunteer.volunteer_name;
     }
-
-    const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}/status`, {
-      ...fetchOptions,
-      method: 'PATCH',
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `HTTP ${res.status}`);
-    }
-    return res.json();
+    // Use shared helper with Spring → Flask fallback
+    return await patchStatus(id, payload);
   }
 
   // ============================================
@@ -660,16 +669,8 @@ menu: nav/home.html
   // Parameters: name (string)
   // ============================================
   async function executeVolunteerAssignment(name) {
-    const res = await fetch(`${pythonURI}/api/donations/${encodeURIComponent(currentDonation.id)}/assign-volunteer`, {
-      ...fetchOptions,
-      method: 'POST',
-      body: JSON.stringify({ volunteer_name: name })
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `HTTP ${res.status}`);
-    }
-    return res.json();
+    // Use shared helper with Spring → Flask fallback
+    return await apiAssignVolunteer(currentDonation.id, { volunteer_name: name });
   }
 
   // ============================================
