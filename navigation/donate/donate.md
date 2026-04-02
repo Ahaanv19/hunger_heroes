@@ -311,14 +311,14 @@ menu: nav/home.html
       clearTimeout(timeoutId);
       if (res.ok) {
         const stats = await res.json();
-        const bs = stats.byStatus || {};
+        const bs = stats.byStatus || stats.by_status || {};
         animateCounter('stat-total', stats.total || 0);
-        animateCounter('stat-posted', bs.active || 0);
-        animateCounter('stat-claimed', bs.accepted || 0);
-        animateCounter('stat-in-transit', bs['in-transit'] || 0);
+        animateCounter('stat-posted', bs.active || bs.posted || 0);
+        animateCounter('stat-claimed', bs.accepted || bs.claimed || 0);
+        animateCounter('stat-in-transit', bs['in-transit'] || bs.in_transit || 0);
         animateCounter('stat-delivered', bs.delivered || 0);
-        animateCounter('stat-confirmed', bs.confirmed || bs.delivered || 0);
-        animateCounter('stat-volunteers', stats.expiringSoon || 0);
+        animateCounter('stat-confirmed', bs.confirmed || 0);
+        animateCounter('stat-volunteers', stats.expiringSoon || stats.expiring_soon || 0);
         return;
       }
     } catch(e) {

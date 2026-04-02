@@ -131,12 +131,35 @@ menu: nav/home.html
   }
 
   // ============================================
-  // WORKER: Fetch category path from Spring
+  // WORKER: Fetch category path (Spring → Flask fallback)
   // Parameters: cat (string)
   // Returns: array
   // ============================================
   async function fetchCategoryPath(cat) {
-    return springFetch(`${javaURI}/api/donations/categories/path?category=${encodeURIComponent(cat)}`);
+    // Step 1: Try Spring
+    try {
+      return await springFetch(`${javaURI}/api/donations/categories/path?category=${encodeURIComponent(cat)}`);
+    } catch (springErr) {
+      console.log('Spring path unavailable, building from Flask…', springErr.message);
+    }
+    // Step 2: Flask fallback — build a simple path from the tree
+    try {
+      const tree = await buildFlaskTree();
+      const path = [];
+      function findPath(node, target) {
+        path.push(node.name);
+        if (node.name.toLowerCase() === target.toLowerCase()) return true;
+        for (const child of (node.children || [])) {
+          if (findPath(child, target)) return true;
+        }
+        path.pop();
+        return false;
+      }
+      if (findPath(tree, cat)) return path;
+      return [cat]; // category not found, return as-is
+    } catch (flaskErr) {
+      throw flaskErr;
+    }
   }
 
   // ============================================

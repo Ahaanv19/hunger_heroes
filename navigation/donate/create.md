@@ -808,35 +808,8 @@ menu: nav/home.html
   }
 
   // ============================================
-  // WORKER: Post donation to Spring backend
-  // Parameters: data (object)
-  // Returns: id (string) or null
-  // ============================================
-  async function postToSpring(data) {
-    const result = await springFetch(`${javaURI}/api/donations`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-    console.log('✅ Spring donation created:', result.id || result.donation_id);
-    return result.id || result.donation_id || null;
-  }
-
-  // ============================================
-  // WORKER: Post donation to Flask backend
-  // Parameters: data (object)
-  // Returns: id (string) or null
-  // ============================================
-  async function postToFlask(data) {
-    const result = await flaskFetch(`${pythonURI}/api/donations`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-    console.log('✅ Flask donation created');
-    return result.id || result.donation_id || null;
-  }
-
-  // ============================================
   // ORCHESTRATOR: Submit donation — try both backends, localStorage fallback
+  // dualPost already handles Spring → Flask with sync
   // ============================================
   window.submitDonation = async function() {
     if (!validateStep(3)) return;

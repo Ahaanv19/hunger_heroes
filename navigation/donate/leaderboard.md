@@ -115,6 +115,8 @@ menu: nav/home.html
   async function fetchStats() {
     try {
       const data = await springFetch(`${javaURI}/api/donations/stats`);
+      // Normalize: Spring may return byStatus or by_status
+      if (data.byStatus && !data.by_status) data.by_status = data.byStatus;
       return { data, source: 'spring' };
     } catch (e) {
       console.log('Spring stats unavailable');
@@ -134,7 +136,16 @@ menu: nav/home.html
   // ============================================
   async function fetchLeaderboard() {
     try {
-      const data = await springFetch(`${javaURI}/api/donations/leaderboard?limit=10`);
+      let data = await springFetch(`${javaURI}/api/donations/leaderboard?limit=10`);
+      // Normalize camelCase keys from Spring
+      if (Array.isArray(data)) {
+        data = data.map(d => ({
+          ...d,
+          donor_name: d.donor_name || d.donorName,
+          total_donations: d.total_donations || d.totalDonations || d.count || 0,
+          email: d.email || d.donor_email || d.donorEmail,
+        }));
+      }
       return { data, source: 'spring' };
     } catch (e) {
       console.log('Spring leaderboard unavailable');
@@ -167,11 +178,11 @@ menu: nav/home.html
       return;
     }
     const s = statsData;
-    const bs = s.byStatus || {};
+    const bs = s.byStatus || s.by_status || {};
     animateCounter('lb-total', s.total || 0);
     animateCounter('lb-delivered', bs.delivered || s.delivered || 0);
-    animateCounter('lb-active', bs.active || s.posted || 0);
-    animateCounter('lb-donors', s.expiringSoon || 0);
+    animateCounter('lb-active', bs.active || bs.posted || s.posted || 0);
+    animateCounter('lb-donors', s.expiringSoon || s.expiring_soon || 0);
   }
 
   // ============================================

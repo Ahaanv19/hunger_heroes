@@ -228,12 +228,33 @@ menu: nav/home.html
   }
 
   // ============================================
-  // WORKER: Fetch recommendations from Spring
+  // WORKER: Fetch recommendations (Spring → Flask fallback)
   // Parameters: email (string)
   // Returns: array
   // ============================================
   async function fetchRecommendations(email) {
-    return springFetch(`${javaURI}/api/donations/graph/recommendations?email=${encodeURIComponent(email)}&maxDepth=2`);
+    // Step 1: Try Spring graph recommendations
+    try {
+      return await springFetch(`${javaURI}/api/donations/graph/recommendations?email=${encodeURIComponent(email)}&maxDepth=2`);
+    } catch (springErr) {
+      console.log('Spring recommendations unavailable, building from Flask…', springErr.message);
+    }
+    // Step 2: Flask fallback — find connected donors/volunteers
+    try {
+      const raw = await flaskFetch(`${pythonURI}/api/donations`);
+      const donations = normalizeDonationList(raw);
+      const connected = new Set();
+      donations.forEach(d => {
+        const donor = (d.donor_email || d.donor_name || '').toLowerCase();
+        const vol = (d.volunteer_name || '').toLowerCase();
+        const target = email.toLowerCase();
+        if (donor === target && vol) connected.add(vol);
+        if (vol === target && donor) connected.add(donor);
+      });
+      return [...connected];
+    } catch (flaskErr) {
+      throw flaskErr;
+    }
   }
 
   // ============================================

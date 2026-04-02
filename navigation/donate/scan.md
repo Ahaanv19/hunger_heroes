@@ -295,7 +295,9 @@ menu: nav/home.html
       body: JSON.stringify({ scan_data: id, scan_type: 'qr' })
     });
     console.log('✅ Spring scan lookup');
-    return { donation: data, warnings: data.warnings || [] };
+    // Normalize camelCase → snake_case for consistent frontend access
+    const donation = normalizeSpringDonation(data);
+    return { donation, warnings: data.warnings || [] };
   }
 
   // ============================================
@@ -315,7 +317,8 @@ menu: nav/home.html
   // WORKER: Try Spring GET by ID
   // ============================================
   async function trySpringGet(id) {
-    return springFetch(`${javaURI}/api/donations/${encodeURIComponent(id)}`);
+    const data = await springFetch(`${javaURI}/api/donations/${encodeURIComponent(id)}`);
+    return normalizeSpringDonation(data);
   }
 
   // ============================================
@@ -323,6 +326,28 @@ menu: nav/home.html
   // ============================================
   async function tryFlaskGet(id) {
     return flaskFetch(`${pythonURI}/api/donations/${encodeURIComponent(id)}`);
+  }
+
+  // ============================================
+  // HELPER: Normalize Spring camelCase to snake_case for scan page
+  // ============================================
+  function normalizeSpringDonation(d) {
+    if (!d) return d;
+    return {
+      ...d,
+      food_name: d.food_name || d.foodName,
+      donor_name: d.donor_name || d.donorName,
+      donor_zip: d.donor_zip || d.donorZip || d.zip_code || d.zipCode,
+      donor_email: d.donor_email || d.donorEmail,
+      donor_phone: d.donor_phone || d.donorPhone,
+      expiry_date: d.expiry_date || d.expiryDate || d.expiration_date || d.expirationDate,
+      special_instructions: d.special_instructions || d.specialInstructions,
+      scan_count: d.scan_count ?? d.scanCount ?? 0,
+      volunteer_name: d.volunteer_name || d.volunteerName,
+      dietary_tags: d.dietary_tags || d.dietaryTags,
+      created_at: d.created_at || d.createdAt,
+      status: d.status || d.donation_status || d.donationStatus,
+    };
   }
 
   // ============================================
@@ -623,7 +648,8 @@ menu: nav/home.html
   async function executeStatusTransition(newStatus) {
     const id = currentDonation.id;
     // Convert scan-page status → backend status vocabulary before sending
-    const payload = { new_status: toBackendStatus(newStatus) };
+    const backendStatus = toBackendStatus(newStatus);
+    const payload = { status: backendStatus };
     if (currentDonation.volunteer?.volunteer_name) {
       payload.volunteer_name = currentDonation.volunteer.volunteer_name;
     }

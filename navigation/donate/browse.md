@@ -157,8 +157,18 @@ menu: nav/home.html
     try {
       let url = `${javaURI}/api/donations/sorted?sortBy=${sortBy}`;
       if (status) url += `&status=${status}`;
-      items = await springFetch(url);
-      items = Array.isArray(items) ? items : [];
+      let raw = await springFetch(url);
+      // Normalize camelCase keys from Spring → snake_case for consistent frontend access
+      items = Array.isArray(raw) ? raw.map(d => ({
+        ...d,
+        food_name: d.food_name || d.foodName,
+        donor_name: d.donor_name || d.donorName,
+        donor_zip: d.donor_zip || d.donorZip || d.zip_code || d.zipCode,
+        expiry_date: d.expiry_date || d.expiryDate || d.expiration_date || d.expirationDate,
+        dietary_tags: d.dietary_tags || d.dietaryTags,
+        allergens: d.allergens,
+        days_until_expiry: d.days_until_expiry ?? d.daysUntilExpiry ?? null,
+      })) : [];
       source = 'spring';
     } catch (springErr) {
       console.log('Spring sorted unavailable, trying Flask…', springErr.message);

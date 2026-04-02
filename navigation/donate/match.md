@@ -285,11 +285,26 @@ menu: nav/home.html
   }
 
   // ============================================
-  // WORKER: Accept a donation via Spring
+  // WORKER: Accept a donation via Spring → Flask fallback
   // Parameters: id (string)
   // ============================================
   async function acceptDonation(id) {
-    return springFetch(`${javaURI}/api/donations/${id}/accept`, { method: 'POST' });
+    // Step 1: Try Spring
+    try {
+      return await springFetch(`${javaURI}/api/donations/${id}/accept`, { method: 'POST' });
+    } catch (springErr) {
+      console.log('Spring accept unavailable, trying Flask…', springErr.message);
+    }
+    // Step 2: Flask fallback — PATCH status to accepted
+    try {
+      return await flaskFetch(`${pythonURI}/api/donations/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'accepted' })
+      });
+    } catch (flaskErr) {
+      console.log('Flask accept also failed');
+      throw flaskErr;
+    }
   }
 
   // ============================================
@@ -314,7 +329,16 @@ menu: nav/home.html
       // Step 1: Try Spring smart-match
       try {
         const data = await fetchSpringMatches(zip, dietary, allergenExclude);
-        items = Array.isArray(data) ? data : [];
+        // Normalize camelCase keys from Spring → snake_case
+        items = (Array.isArray(data) ? data : []).map(d => ({
+          ...d,
+          food_name: d.food_name || d.foodName,
+          donor_name: d.donor_name || d.donorName,
+          donor_zip: d.donor_zip || d.donorZip || d.zip_code || d.zipCode,
+          expiry_date: d.expiry_date || d.expiryDate || d.expiration_date || d.expirationDate,
+          dietary_tags: d.dietary_tags || d.dietaryTags,
+          days_until_expiry: d.days_until_expiry ?? d.daysUntilExpiry ?? null,
+        }));
         source = 'spring';
       } catch (springErr) {
         console.log('Spring match unavailable, trying Flask…', springErr.message);

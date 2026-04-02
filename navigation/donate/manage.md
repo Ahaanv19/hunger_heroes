@@ -182,14 +182,20 @@ menu: nav/home.html
       await springFetch(`${javaURI}/api/donations/${id}/${action}`, { method: 'POST' });
       return { success: true, source: 'spring' };
     } catch (springErr) {
-      // Step 2: Fall back to Flask status update if possible
-      const flaskActionMap = { accept: 'claimed', deliver: 'delivered', cancel: 'confirmed' };
-      if (flaskActionMap[action] && action !== 'undo') {
+      // Step 2: Fall back to Flask status PATCH if possible
+      // Map manage-page actions → backend status vocabulary
+      const flaskActionMap = {
+        accept: 'accepted',
+        deliver: 'delivered',
+        cancel: 'cancelled',
+        undo: 'active'  // undo reverts to active
+      };
+      const newStatus = flaskActionMap[action];
+      if (newStatus) {
         try {
-          await flaskFetch(`${pythonURI}/api/donations/${id}`, {
-            ...fetchOptions,
-            method: 'PUT',
-            body: JSON.stringify({ status: flaskActionMap[action] })
+          await flaskFetch(`${pythonURI}/api/donations/${id}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: newStatus })
           });
           return { success: true, source: 'flask' };
         } catch (flaskErr) { /* both failed */ }

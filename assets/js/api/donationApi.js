@@ -109,10 +109,30 @@ export async function flaskFetch(url, opts = {}) {
 // Parameters: springUrl, flaskUrl, opts, transformFlask (optional)
 // Returns: { data, source } — data and which backend served it
 // ============================================
+
+/**
+ * Convert camelCase keys to snake_case for frontend consistency.
+ * e.g. { donorName: 'A', expiryDate: '...' } → { donor_name: 'A', expiry_date: '...' }
+ */
+function toSnakeCase(obj) {
+  if (Array.isArray(obj)) return obj.map(toSnakeCase);
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()),
+        toSnakeCase(v)
+      ])
+    );
+  }
+  return obj;
+}
+
 export async function dualFetch(springUrl, flaskUrl, opts = {}, transformFlask = null) {
   // Step 1: Try Spring backend (primary)
   try {
-    const data = await springFetch(springUrl, opts);
+    let data = await springFetch(springUrl, opts);
+    // Normalize camelCase → snake_case so frontend always uses consistent keys
+    data = toSnakeCase(data);
     return { data, source: 'spring' };
   } catch (springErr) {
     console.log('Spring unavailable, trying Flask…', springErr.message);
@@ -136,20 +156,39 @@ export async function dualFetch(springUrl, flaskUrl, opts = {}, transformFlask =
 // Parameters: endpoint (string), body (object)
 // Returns: { id, source } — donation id and primary source
 // ============================================
+
+/**
+ * Convert snake_case keys to camelCase for Spring compatibility.
+ * e.g. { donor_name: 'A', expiry_date: '...' } → { donorName: 'A', expiryDate: '...' }
+ */
+function toCamelCase(obj) {
+  if (Array.isArray(obj)) return obj.map(toCamelCase);
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [
+        k.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+        toCamelCase(v)
+      ])
+    );
+  }
+  return obj;
+}
+
 export async function dualPost(endpoint, body) {
   let resultId = null;
   let source = 'local';
 
-  // Step 1: Try Spring first
+  // Step 1: Try Spring first (send camelCase keys)
   try {
+    const springBody = toCamelCase(body);
     const springRes = await fetch(`${javaURI}${endpoint}`, {
       ...fetchOptions,
       method: 'POST',
-      body: JSON.stringify(body),
+      body: JSON.stringify(springBody),
     });
     if (springRes.ok) {
       const result = await springRes.json();
-      resultId = result.id || result.donation_id;
+      resultId = result.id || result.donationId || result.donation_id;
       source = 'spring';
       console.log('✅ Spring POST:', endpoint, resultId);
     }
@@ -157,7 +196,7 @@ export async function dualPost(endpoint, body) {
     console.log('Spring unavailable for POST:', e.message);
   }
 
-  // Step 2: Also save to Flask (keep databases in sync)
+  // Step 2: Also save to Flask (keep databases in sync — send snake_case)
   try {
     const flaskRes = await fetch(`${pythonURI}${endpoint}`, {
       ...fetchOptions,
