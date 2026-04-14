@@ -222,6 +222,26 @@ menu: nav/home.html
           </span>
         </div>
       </a>
+      <!-- Hunger Heroes Game Card -->
+      <a href="{{site.baseurl}}/donate/game"
+        class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 dark:from-green-500/10 dark:to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="relative">
+          <div class="w-14 h-14 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center shadow-md mb-5 group-hover:scale-110 transition-transform">
+            <span class="text-2xl">🎮</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Hunger Heroes Game</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
+            Explore the food bank in a 2D game! Walk around, talk to NPCs, and learn how donations work.
+          </p>
+          <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-semibold group-hover:gap-2 transition-all">
+            Play Now
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+      </a>
     </div>
     <!-- How It Works -->
     <div class="bg-white dark:bg-slate-800/80 rounded-lg shadow-md border border-slate-200/50 dark:border-slate-700/50 p-8 sm:p-10 mb-12">
