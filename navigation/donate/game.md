@@ -229,7 +229,7 @@ menu: nav/home.html
   // ============================================
   import { GameCore } from '{{site.baseurl}}/assets/js/GameEnginev1.1/essentials/Game.js';
   import GameControl from '{{site.baseurl}}/assets/js/GameEnginev1.1/essentials/GameControl.js';
-  import GameLevelHungerHeroes from '{{site.baseurl}}/assets/js/GameEnginev1.1/GameLevelHungerHeroes.js';
+  import GameLevelHungerHeroes from '{{site.baseurl}}/assets/js/projects/hunger-heroes-game/levels/GameLevelHungerHeroes.js';
   import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
 
   let gameInstance = null;

@@ -87,7 +87,7 @@ csp: cspserver
 
 
 # Start the local web server
-server: stop convert
+server: stop build-registered-projects convert
 	@echo "Starting server..."
 	@@nohup bundle exec jekyll serve -H 127.0.0.1 -P $(PORT) > $(LOG_FILE) 2>&1 & \
 		PID=$$!; \
@@ -122,6 +122,8 @@ clean: stop
 	@find _posts -type f -name '*_IPYNB_2_.md' -exec rm {} +
 	@echo "Cleaning Github Issue files..."
 	@find _posts -type f -name '*_GithubIssue_.md' -exec rm {} +
+	@echo "Cleaning project distributions..."
+	@make clean-registered-projects
 	@echo "Removing empty directories in _posts..."
 	@while [ $$(find _posts -type d -empty | wc -l) -gt 0 ]; do \
 		find _posts -type d -empty -exec rmdir {} +; \
@@ -140,3 +142,47 @@ stop:
 	@@ps aux | awk -v log_file=$(LOG_FILE) '$$0 ~ "tail -f " log_file { print $$2 }' | xargs kill >/dev/null 2>&1 || true
 	@# removes log
 	@rm -f $(LOG_FILE)
+
+###########################################
+# Project Auto-Registration
+###########################################
+
+# Projects are registered in _projects/.makeprojects (one per line)
+# Each project must have: _projects/<name>/Makefile with generic targets: build, clean, watch
+# Main Makefile calls projects via: make -C _projects/<name> <target>
+
+# Build all registered projects (game assets)
+build-registered-projects:
+	@if [ -f _projects/.makeprojects ]; then \
+		grep -v '^\#' _projects/.makeprojects | grep -v '^$$' | while read proj; do \
+			if [ -f "_projects/$$proj/Makefile" ]; then \
+				echo "📦 Building project: $$proj"; \
+				make -C "_projects/$$proj" build 2>/dev/null || echo "  ⚠️  Build failed for $$proj"; \
+			fi; \
+		done; \
+	fi
+
+# Clean all registered project distributions
+clean-registered-projects:
+	@if [ -f _projects/.makeprojects ]; then \
+		grep -v '^\#' _projects/.makeprojects | grep -v '^$$' | while read proj; do \
+			if [ -f "_projects/$$proj/Makefile" ]; then \
+				make -C "_projects/$$proj" clean 2>/dev/null || true; \
+			fi; \
+		done; \
+	fi
+
+# List all registered projects
+list-projects:
+	@echo "📦 Registered Projects:"
+	@if [ -f _projects/.makeprojects ]; then \
+		grep -v '^\#' _projects/.makeprojects | grep -v '^$$' | while read proj; do \
+			if [ -f "_projects/$$proj/Makefile" ]; then \
+				echo "  ✅ $$proj (active)"; \
+			else \
+				echo "  ⚠️  $$proj (missing Makefile)"; \
+			fi; \
+		done; \
+	else \
+		echo "  No _projects/.makeprojects file found"; \
+	fi
