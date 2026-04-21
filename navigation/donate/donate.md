@@ -46,28 +46,6 @@ menu: nav/home.html
           </span>
         </div>
       </a>
-      <!-- Leaderboard Card -->
-      <a href="{{site.baseurl}}/donate/leaderboard"
-        class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-orange-500/5 dark:from-yellow-400/10 dark:to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="relative">
-          <div class="w-14 h-14 rounded-lg bg-accent-600 flex items-center justify-center shadow-md mb-5 group-hover:scale-110 transition-transform">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Donor Leaderboard</h3>
-          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
-            See the top donors and stats for the Hunger Heroes community.
-          </p>
-          <span class="inline-flex items-center gap-1 text-accent-600 dark:text-accent-500 text-sm font-semibold group-hover:gap-2 transition-all">
-            View Leaderboard
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </div>
-      </a>
       <!-- Manage Donations Card -->
       <a href="{{site.baseurl}}/donate/manage"
         class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
@@ -156,50 +134,6 @@ menu: nav/home.html
           </span>
         </div>
       </a>
-      <!-- Network Analytics Card -->
-      <a href="{{site.baseurl}}/donate/network"
-        class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-cyan-500/5 dark:from-indigo-500/10 dark:to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="relative">
-          <div class="w-14 h-14 rounded-lg bg-secondary-500 flex items-center justify-center shadow-md mb-5 group-hover:scale-110 transition-transform">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Donation Network</h3>
-          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
-            Explore donor-receiver connections, community clusters, and network recommendations.
-          </p>
-          <span class="inline-flex items-center gap-1 text-secondary-600 dark:text-secondary-400 text-sm font-semibold group-hover:gap-2 transition-all">
-            Explore
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-      <!-- Categories Card -->
-      <a href="{{site.baseurl}}/donate/categories"
-        class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-rose-500/5 dark:from-amber-500/10 dark:to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="relative">
-          <div class="w-14 h-14 rounded-lg bg-accent-600 flex items-center justify-center shadow-md mb-5 group-hover:scale-110 transition-transform">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Food Categories</h3>
-          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
-            Browse the hierarchical food category tree and trace category paths.
-          </p>
-          <span class="inline-flex items-center gap-1 text-accent-600 dark:text-accent-500 text-sm font-semibold group-hover:gap-2 transition-all">
-            Explore
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </div>
-      </a>
       <!-- Browse & Sort Card -->
       <a href="{{site.baseurl}}/donate/browse"
         class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
@@ -216,26 +150,6 @@ menu: nav/home.html
           </p>
           <span class="inline-flex items-center gap-1 text-primary-600 dark:text-primary-400 text-sm font-semibold group-hover:gap-2 transition-all">
             Browse
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-      <!-- Hunger Heroes Game Card -->
-      <a href="{{site.baseurl}}/donate/game"
-        class="group relative bg-white dark:bg-slate-800/80 rounded-lg shadow-md hover:shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-8 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 dark:from-green-500/10 dark:to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div class="relative">
-          <div class="w-14 h-14 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center shadow-md mb-5 group-hover:scale-110 transition-transform">
-            <span class="text-2xl">🎮</span>
-          </div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Hunger Heroes Game</h3>
-          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
-            Explore the food bank in a 2D game! Walk around, talk to NPCs, and learn how donations work.
-          </p>
-          <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-semibold group-hover:gap-2 transition-all">
-            Play Now
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
