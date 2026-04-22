@@ -174,15 +174,4 @@ clean-registered-projects:
 
 # List all registered projects
 list-projects:
-	@echo "📦 Registered Projects:"
-	@if [ -f _projects/.makeprojects ]; then \
-		grep -v '^\#' _projects/.makeprojects | grep -v '^$$' | while read proj; do \
-			if [ -f "_projects/$$proj/Makefile" ]; then \
-				echo "  ✅ $$proj (active)"; \
-			else \
-				echo "  ⚠️  $$proj (missing Makefile)"; \
-			fi; \
-		done; \
-	else \
-		echo "  No _projects/.makeprojects file found"; \
-	fi
+	@python3 _projects/.list_projects.py
