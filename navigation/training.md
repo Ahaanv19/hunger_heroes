@@ -6,6 +6,10 @@ search_exclude: true
 permalink: /training-hub/
 ---
 
+{% assign food_safety_pdf = '/assets/pdfs/training/food-safety-handbook.pdf' | relative_url %}
+{% assign donor_checklist_pdf = '/assets/pdfs/training/donor-checklist.pdf' | relative_url %}
+{% assign receiver_checklist_pdf = '/assets/pdfs/training/receiver-checklist.pdf' | relative_url %}
+
 <div class="training-hub-page">
 	<section class="training-hub-hero">
 		<p class="training-hub-hero__eyebrow">Training Hub</p>
@@ -20,18 +24,31 @@ permalink: /training-hub/
 	<section class="training-hub-section">
 		<div class="training-hub-section__header">
 			<h2>Training Resources</h2>
-			<p>Three dedicated embed slots are ready for your handbook and checklist files.</p>
+			<p>
+				Each file will show a cover-page preview here. Clicking the preview opens a fullscreen viewer for the
+				full PDF.
+			</p>
 		</div>
 
 		<div class="training-hub-grid">
 			<article class="training-hub-card">
 				<div class="training-hub-card__tag">Embed Slot 01</div>
 				<h3>Food Safety Handbook</h3>
-				<p>Reserve this area for a PDF, Google Drive viewer, or another handbook embed.</p>
-				<div class="training-hub-embed" data-embed-slot="food-safety-handbook">
-					<div>
-						<strong>Future handbook embed</strong>
-						<p class="training-hub-embed__meta">Replace this container with the handbook viewer when the file is ready.</p>
+				<p>Food handling standards, storage guidance, and volunteer safety procedures.</p>
+				<div class="training-hub-pdf" data-pdf-title="Food Safety Handbook" data-pdf-src="{{ food_safety_pdf }}">
+					<button class="training-hub-pdf__button" type="button" disabled>
+						<span class="training-hub-pdf__viewer">
+							<canvas class="training-hub-pdf__canvas" aria-hidden="true"></canvas>
+							<span class="training-hub-pdf__placeholder">
+								<strong>Food Safety Handbook</strong>
+								<span class="training-hub-pdf__placeholder-note">Cover preview loads automatically when the PDF is available.</span>
+							</span>
+							<span class="training-hub-pdf__overlay">Open fullscreen</span>
+						</span>
+					</button>
+					<div class="training-hub-pdf__meta">
+						<a class="training-hub-pdf__link" href="{{ food_safety_pdf }}" target="_blank" rel="noopener">Open in new tab</a>
+						<p class="training-hub-pdf__status">Expected file: <span>assets/pdfs/training/food-safety-handbook.pdf</span></p>
 					</div>
 				</div>
 			</article>
@@ -39,11 +56,21 @@ permalink: /training-hub/
 			<article class="training-hub-card">
 				<div class="training-hub-card__tag">Embed Slot 02</div>
 				<h3>Donor Checklist</h3>
-				<p>Use this section for the donor-facing preparation checklist and related quick reference material.</p>
-				<div class="training-hub-embed" data-embed-slot="donor-checklist">
-					<div>
-						<strong>Future donor embed</strong>
-						<p class="training-hub-embed__meta">This panel is ready for an embedded checklist document or form.</p>
+				<p>Donor-side prep steps, packaging rules, and handoff reminders before pickup.</p>
+				<div class="training-hub-pdf" data-pdf-title="Donor Checklist" data-pdf-src="{{ donor_checklist_pdf }}">
+					<button class="training-hub-pdf__button" type="button" disabled>
+						<span class="training-hub-pdf__viewer">
+							<canvas class="training-hub-pdf__canvas" aria-hidden="true"></canvas>
+							<span class="training-hub-pdf__placeholder">
+								<strong>Donor Checklist</strong>
+								<span class="training-hub-pdf__placeholder-note">Cover preview loads automatically when the PDF is available.</span>
+							</span>
+							<span class="training-hub-pdf__overlay">Open fullscreen</span>
+						</span>
+					</button>
+					<div class="training-hub-pdf__meta">
+						<a class="training-hub-pdf__link" href="{{ donor_checklist_pdf }}" target="_blank" rel="noopener">Open in new tab</a>
+						<p class="training-hub-pdf__status">Expected file: <span>assets/pdfs/training/donor-checklist.pdf</span></p>
 					</div>
 				</div>
 			</article>
@@ -51,11 +78,21 @@ permalink: /training-hub/
 			<article class="training-hub-card">
 				<div class="training-hub-card__tag">Embed Slot 03</div>
 				<h3>Receiver Checklist</h3>
-				<p>Keep receiver-side intake steps here so volunteers can review the workflow before shifts.</p>
-				<div class="training-hub-embed" data-embed-slot="receiver-checklist">
-					<div>
-						<strong>Future receiver embed</strong>
-						<p class="training-hub-embed__meta">Swap in the final checklist embed once that file is available.</p>
+				<p>Receiver intake steps, confirmation flow, and delivery acceptance checks.</p>
+				<div class="training-hub-pdf" data-pdf-title="Receiver Checklist" data-pdf-src="{{ receiver_checklist_pdf }}">
+					<button class="training-hub-pdf__button" type="button" disabled>
+						<span class="training-hub-pdf__viewer">
+							<canvas class="training-hub-pdf__canvas" aria-hidden="true"></canvas>
+							<span class="training-hub-pdf__placeholder">
+								<strong>Receiver Checklist</strong>
+								<span class="training-hub-pdf__placeholder-note">Cover preview loads automatically when the PDF is available.</span>
+							</span>
+							<span class="training-hub-pdf__overlay">Open fullscreen</span>
+						</span>
+					</button>
+					<div class="training-hub-pdf__meta">
+						<a class="training-hub-pdf__link" href="{{ receiver_checklist_pdf }}" target="_blank" rel="noopener">Open in new tab</a>
+						<p class="training-hub-pdf__status">Expected file: <span>assets/pdfs/training/receiver-checklist.pdf</span></p>
 					</div>
 				</div>
 			</article>
@@ -98,4 +135,26 @@ permalink: /training-hub/
 		</div>
 	</section>
 </div>
+
+<div class="training-hub-modal" id="training-hub-pdf-modal" hidden>
+	<div class="training-hub-modal__backdrop" data-pdf-modal-close></div>
+	<div class="training-hub-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="training-hub-pdf-title">
+		<div class="training-hub-modal__header">
+			<div>
+				<p class="training-hub-modal__eyebrow">Document Viewer</p>
+				<h2 id="training-hub-pdf-title">Training PDF</h2>
+			</div>
+			<div class="training-hub-modal__actions">
+				<a class="training-hub-modal__link" id="training-hub-pdf-link" href="#" target="_blank" rel="noopener">Open in new tab</a>
+				<button class="training-hub-modal__close" type="button" data-pdf-modal-close aria-label="Close document viewer">Close</button>
+			</div>
+		</div>
+		<div class="training-hub-modal__body">
+			<iframe class="training-hub-modal__frame" id="training-hub-pdf-frame" title="Training PDF Viewer" loading="lazy"></iframe>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ '/assets/js/training-hub-pdfs.js' | relative_url }}"></script>
 

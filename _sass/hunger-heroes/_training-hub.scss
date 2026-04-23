@@ -122,7 +122,44 @@
 	margin: 0 0 $token-space-4;
 }
 
-.training-hub-embed {
+.training-hub-pdf {
+	display: grid;
+	gap: $token-space-3;
+}
+
+.training-hub-pdf__button {
+	appearance: none;
+	background: none;
+	border: 0;
+	cursor: pointer;
+	padding: 0;
+	text-align: inherit;
+
+	&:disabled {
+		cursor: not-allowed;
+	}
+
+	&:focus-visible .training-hub-pdf__viewer {
+		box-shadow: 0 0 0 3px #{rgba($token-primary-500, 0.22)};
+		outline: none;
+	}
+
+	&:hover:not(:disabled) .training-hub-pdf__overlay,
+	&:focus-visible .training-hub-pdf__overlay {
+		opacity: 1;
+	}
+
+	&:hover:not(:disabled) .training-hub-pdf__viewer,
+	&:focus-visible .training-hub-pdf__viewer {
+		transform: translateY(-2px);
+	}
+
+	&:disabled .training-hub-pdf__overlay {
+		opacity: 0;
+	}
+}
+
+.training-hub-pdf__viewer {
 	align-items: center;
 	background: repeating-linear-gradient(
 		-45deg,
@@ -134,24 +171,96 @@
 	border: 1px dashed var(--training-embed-border);
 	border-radius: $token-radius-xl;
 	display: grid;
-	min-height: 210px;
+	min-height: 260px;
+	overflow: hidden;
 	padding: $token-space-4;
 	place-items: center;
+	position: relative;
+	transition: transform $token-transition-fast, box-shadow $token-transition-fast;
+	width: 100%;
+}
+
+.training-hub-pdf__canvas {
+	background: $token-bg-card;
+	border-radius: $token-radius-md;
+	box-shadow: $token-shadow-md;
+	display: none;
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.training-hub-pdf[data-pdf-ready='true'] {
+	.training-hub-pdf__canvas {
+		display: block;
+	}
+
+	.training-hub-pdf__placeholder {
+		display: none;
+	}
+	}
+
+.training-hub-pdf__placeholder {
+	color: var(--training-slate);
+	display: grid;
+	gap: $token-space-2;
+	justify-items: center;
+	max-width: 15rem;
 	text-align: center;
+
+	strong {
+		color: var(--training-ink);
+		font-size: $token-text-base;
+	}
 }
 
-.training-hub-embed strong {
-	color: var(--training-ink);
-	display: block;
-	font-size: $token-text-base;
-	margin-bottom: 0.35rem;
+.training-hub-pdf__placeholder-note {
+	font-size: 0.92rem;
+	line-height: $token-leading-normal;
 }
 
-.training-hub-embed__meta {
+.training-hub-pdf__overlay {
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(18, 18, 18, 0.68) 100%);
+	bottom: 0;
+	color: $token-text-inverse;
+	font-size: $token-text-sm;
+	font-weight: $token-weight-semibold;
+	left: 0;
+	opacity: 0;
+	padding: $token-space-6 $token-space-4 $token-space-4;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	transition: opacity $token-transition-fast;
+}
+
+.training-hub-pdf__meta {
+	display: grid;
+	gap: $token-space-2;
+}
+
+.training-hub-pdf__link {
+	color: var(--training-accent);
+	font-size: $token-text-sm;
+	font-weight: $token-weight-semibold;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		text-decoration: underline;
+	}
+}
+
+.training-hub-pdf__status {
+	color: var(--training-slate);
 	font-size: 0.92rem;
 	line-height: $token-leading-normal;
 	margin: 0;
-	max-width: 14rem;
+
+	span {
+		color: var(--training-ink);
+		font-family: $token-font-mono;
+		font-size: 0.85rem;
+	}
 }
 
 .training-hub-lower {
@@ -210,9 +319,151 @@
 	max-width: 16rem;
 }
 
+body.training-hub-modal-open {
+	overflow: hidden;
+}
+
+.training-hub-modal {
+	align-items: center;
+	display: grid;
+	inset: 0;
+	padding: $token-space-5;
+	position: fixed;
+	z-index: $token-z-modal;
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+.training-hub-modal__backdrop {
+	background: rgba(15, 23, 42, 0.8);
+	inset: 0;
+	position: absolute;
+}
+
+.training-hub-modal__dialog {
+	background: $token-bg-card;
+	border: 1px solid #{rgba($token-secondary-500, 0.18)};
+	border-radius: $token-radius-2xl;
+	box-shadow: $token-shadow-xl;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	max-height: min(92vh, 1000px);
+	max-width: min(96vw, 1200px);
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	z-index: 1;
+}
+
+.training-hub-modal__header {
+	align-items: center;
+	border-bottom: 1px solid var(--training-line);
+	display: flex;
+	gap: $token-space-4;
+	justify-content: space-between;
+	padding: $token-space-5 $token-space-6;
+}
+
+.training-hub-modal__eyebrow {
+	color: var(--training-accent);
+	font-size: 0.78rem;
+	font-weight: $token-weight-bold;
+	letter-spacing: 0.08em;
+	margin: 0 0 $token-space-1;
+	text-transform: uppercase;
+}
+
+.training-hub-modal__header h2 {
+	color: var(--training-ink);
+	font-size: $token-text-xl;
+	margin: 0;
+}
+
+.training-hub-modal__actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: $token-space-3;
+	justify-content: flex-end;
+}
+
+.training-hub-modal__link,
+.training-hub-modal__close {
+	border-radius: $token-radius-full;
+	font-size: $token-text-sm;
+	font-weight: $token-weight-semibold;
+	padding: 0.7rem 1rem;
+	text-decoration: none;
+	transition: background-color $token-transition-fast, color $token-transition-fast, border-color $token-transition-fast;
+	white-space: nowrap;
+}
+
+.training-hub-modal__link {
+	background: #{rgba($token-primary-500, 0.1)};
+	color: var(--training-accent);
+
+	&:hover,
+	&:focus-visible {
+		background: #{rgba($token-primary-500, 0.16)};
+	}
+}
+
+.training-hub-modal__close {
+	background: transparent;
+	border: 1px solid var(--training-line);
+	color: var(--training-ink);
+	cursor: pointer;
+
+	&:hover,
+	&:focus-visible {
+		background: #{rgba($token-secondary-500, 0.08)};
+	}
+}
+
+.training-hub-modal__body {
+	background: $token-bg-section;
+	min-height: 0;
+	padding: $token-space-4;
+	}
+
+.training-hub-modal__frame {
+	background: $token-bg-card;
+	border: 0;
+	border-radius: $token-radius-lg;
+	min-height: min(78vh, 820px);
+	width: 100%;
+}
+
 @media (max-width: $token-bp-sm) {
 	.training-hub-hero,
 	.training-hub-section {
 		padding: $token-space-6;
+	}
+
+	.training-hub-modal {
+		padding: $token-space-3;
+	}
+
+	.training-hub-modal__header {
+		align-items: flex-start;
+		flex-direction: column;
+		padding: $token-space-4;
+	}
+
+	.training-hub-modal__actions {
+		justify-content: stretch;
+		width: 100%;
+	}
+
+	.training-hub-modal__link,
+	.training-hub-modal__close {
+		text-align: center;
+		width: 100%;
+	}
+
+	.training-hub-modal__body {
+		padding: $token-space-3;
 	}
 }
