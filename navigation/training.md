@@ -32,7 +32,7 @@ permalink: /training-hub/
 
 		<div class="training-hub-grid">
 			<article class="training-hub-card">
-				<div class="training-hub-card__tag">Embed Slot 01</div>
+				<div class="training-hub-card__tag">General</div>
 				<h3>Food Safety Handbook</h3>
 				<p>Food handling standards, storage guidance, and volunteer safety procedures.</p>
 				<div class="training-hub-pdf" data-pdf-title="Food Safety Handbook" data-pdf-src="{{ food_safety_pdf }}">
@@ -54,7 +54,7 @@ permalink: /training-hub/
 			</article>
 
 			<article class="training-hub-card">
-				<div class="training-hub-card__tag">Embed Slot 02</div>
+				<div class="training-hub-card__tag">Donors</div>
 				<h3>Donor Checklist</h3>
 				<p>Donor-side prep steps, packaging rules, and handoff reminders before pickup.</p>
 				<div class="training-hub-pdf" data-pdf-title="Donor Checklist" data-pdf-src="{{ donor_checklist_pdf }}">
@@ -76,7 +76,7 @@ permalink: /training-hub/
 			</article>
 
 			<article class="training-hub-card">
-				<div class="training-hub-card__tag">Embed Slot 03</div>
+				<div class="training-hub-card__tag">Receivers</div>
 				<h3>Receiver Checklist</h3>
 				<p>Receiver intake steps, confirmation flow, and delivery acceptance checks.</p>
 				<div class="training-hub-pdf" data-pdf-title="Receiver Checklist" data-pdf-src="{{ receiver_checklist_pdf }}">

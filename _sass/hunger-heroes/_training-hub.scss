@@ -171,9 +171,9 @@
 	border: 1px dashed var(--training-embed-border);
 	border-radius: $token-radius-xl;
 	display: grid;
-	min-height: 260px;
+	aspect-ratio: 5 / 3;
 	overflow: hidden;
-	padding: $token-space-4;
+	padding: 0;
 	place-items: center;
 	position: relative;
 	transition: transform $token-transition-fast, box-shadow $token-transition-fast;
@@ -182,11 +182,10 @@
 
 .training-hub-pdf__canvas {
 	background: $token-bg-card;
-	border-radius: $token-radius-md;
-	box-shadow: $token-shadow-md;
+	border-radius: inherit;
 	display: none;
-	max-height: 100%;
-	max-width: 100%;
+	height: 100%;
+	width: 100%;
 }
 
 .training-hub-pdf[data-pdf-ready='true'] {
@@ -204,6 +203,7 @@
 	display: grid;
 	gap: $token-space-2;
 	justify-items: center;
+	padding: $token-space-4;
 	max-width: 15rem;
 	text-align: center;
 

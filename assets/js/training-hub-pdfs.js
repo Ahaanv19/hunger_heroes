@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+	const PREVIEW_TOP_RATIO = 0.30;
+	const PREVIEW_ASPECT_RATIO = 5 / 3;
 	const pdfCards = Array.from(document.querySelectorAll('.training-hub-pdf'));
 	const modal = document.getElementById('training-hub-pdf-modal');
 	const modalTitle = document.getElementById('training-hub-pdf-title');
@@ -40,9 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		const source = card.dataset.pdfSrc;
 		const title = card.dataset.pdfTitle || 'Training PDF';
 		const button = card.querySelector('.training-hub-pdf__button');
+		const viewer = card.querySelector('.training-hub-pdf__viewer');
 		const canvas = card.querySelector('.training-hub-pdf__canvas');
 
-		if (!source || !button || !canvas) {
+		if (!source || !button || !viewer || !canvas) {
 			setStatus(card, 'PDF path is missing for this document.');
 			return;
 		}
@@ -51,23 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const loadingTask = library.getDocument(source);
 			const pdf = await loadingTask.promise;
 			const page = await pdf.getPage(1);
-			const viewport = page.getViewport({ scale: 1 });
-			const previewWidth = Math.min(card.clientWidth - 32, 280);
-			const scale = previewWidth / viewport.width;
-			const scaledViewport = page.getViewport({ scale: Math.max(scale, 0.9) });
-			const pixelRatio = window.devicePixelRatio || 1;
-			const context = canvas.getContext('2d');
-
-			canvas.width = Math.floor(scaledViewport.width * pixelRatio);
-			canvas.height = Math.floor(scaledViewport.height * pixelRatio);
-			canvas.style.width = scaledViewport.width + 'px';
-			canvas.style.height = scaledViewport.height + 'px';
-
-			await page.render({
-				canvasContext: context,
-				transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0],
-				viewport: scaledViewport,
-			}).promise;
+			await renderPreview(page, viewer, canvas, card);
 
 			card.dataset.pdfReady = 'true';
 			button.disabled = false;
@@ -81,6 +68,67 @@ document.addEventListener('DOMContentLoaded', function () {
 			setStatus(card, 'Preview unavailable until the PDF file is added at the expected path.');
 			console.warn('Training Hub PDF preview failed for', title, error);
 		}
+	}
+
+	async function renderPreview(page, viewer, canvas, card) {
+		const pixelRatio = window.devicePixelRatio || 1;
+		const viewerWidth = Math.max(Math.round(viewer.clientWidth), 1);
+		const viewerHeight = Math.max(Math.round(viewer.clientHeight), 1);
+		const previewTopRatio = getPreviewTopRatio(card);
+		const baseViewport = page.getViewport({ scale: 1 });
+		const targetAspectRatio = viewerWidth / viewerHeight || PREVIEW_ASPECT_RATIO;
+		const cropY = baseViewport.height * previewTopRatio;
+		const cropHeight = Math.min(
+			baseViewport.height - cropY,
+			baseViewport.width / targetAspectRatio
+		);
+		const scale = viewerWidth / baseViewport.width;
+		const scaledViewport = page.getViewport({ scale: Math.max(scale, 0.9) });
+		const renderCanvas = document.createElement('canvas');
+		const renderContext = renderCanvas.getContext('2d');
+
+		renderCanvas.width = Math.ceil(scaledViewport.width * pixelRatio);
+		renderCanvas.height = Math.ceil(scaledViewport.height * pixelRatio);
+
+		await page.render({
+			canvasContext: renderContext,
+			transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0],
+			viewport: scaledViewport,
+		}).promise;
+
+		canvas.width = Math.ceil(viewerWidth * pixelRatio);
+		canvas.height = Math.ceil(viewerHeight * pixelRatio);
+		canvas.style.width = '100%';
+		canvas.style.height = '100%';
+
+		const context = canvas.getContext('2d');
+		const sourceY = Math.max(Math.floor(cropY * scale * pixelRatio), 0);
+		const sourceHeight = Math.min(
+			Math.ceil(cropHeight * scale * pixelRatio),
+			renderCanvas.height - sourceY
+		);
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.drawImage(
+			renderCanvas,
+			0,
+			sourceY,
+			renderCanvas.width,
+			sourceHeight,
+			0,
+			0,
+			canvas.width,
+			canvas.height
+		);
+	}
+
+	function getPreviewTopRatio(card) {
+		const configuredRatio = Number.parseFloat(card.dataset.previewTop);
+		if (Number.isFinite(configuredRatio) && configuredRatio >= 0 && configuredRatio <= 0.5) {
+			return configuredRatio;
+		}
+
+		return PREVIEW_TOP_RATIO;
 	}
 
 	function openModal(source, title, trigger) {
