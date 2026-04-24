@@ -364,6 +364,15 @@
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
     {{ content }}
+
+    {%- comment -%}
+      Auto-inject the Donate game-flow navigation panel on every /donate/* sub-page
+      (but NOT on the /donate/ hub itself, which has its own canvas tracker).
+    {%- endcomment -%}
+    {%- assign _url = page.url | default: page.permalink -%}
+    {%- if _url contains '/donate/' and _url != '/donate/' and _url != '/donate/index.html' -%}
+      {% include donate-flow-nav.html %}
+    {%- endif -%}
   </main>
 
   <!-- Footer -->
