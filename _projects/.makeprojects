@@ -1,10 +1,12 @@
-# Project Auto-Registration
-# List enabled projects (one per line, no paths needed)
-# Projects must have: _projects/<name>/Makefile
-# Each Makefile must provide generic targets: build, clean, watch
+# Hunger Heroes interactive project registry
+# Register top-level project roots here, one per line.
+# Each entry must match _projects/<name>/Makefile.
+# Nested modules such as training-hub/training-game are built by their parent
+# project and should not be listed here.
 #
-# Format: <project-name>
-# Example: hunger-heroes-game
+# Current roots:
+# - hunger-heroes-game: donation journey game assets
+# - training-hub: volunteer training shell and nested modules
 
 hunger-heroes-game
 training-hub

@@ -2,7 +2,7 @@
  * GameLevelHungerHeroes.js
  *
  * A donation-themed game level for Hunger Heroes.
- * Uses the Open Coding Society GameEngine v1.1 from the nightmare repo.
+ * Uses the shared GameEngine v1.1 published in this site's assets.
  *
  * The player walks around a food bank scene, interacting with NPCs
  * that represent donation stations. Each NPC teaches about the donation
