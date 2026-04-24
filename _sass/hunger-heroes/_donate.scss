@@ -226,7 +226,7 @@
 
   &--match {
     .donation-hub-card__overlay {
-      background: linear-gradient(135deg, rgba($token-secondary-500, 0.05), rgba(#3b82f6, 0.05));
+      background: linear-gradient(135deg, rgba($token-secondary-500, 0.05), rgba($token-primary-400, 0.05));
     }
 
     .donation-hub-card__icon {
@@ -241,7 +241,7 @@
 
   &--manage {
     .donation-hub-card__overlay {
-      background: linear-gradient(135deg, rgba(#2563eb, 0.05), rgba(#7c3aed, 0.05));
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-secondary-600, 0.05));
     }
 
     .donation-hub-card__icon {
@@ -256,7 +256,7 @@
 
   &--create {
     .donation-hub-card__overlay {
-      background: linear-gradient(135deg, rgba(#22c55e, 0.05), rgba(#10b981, 0.05));
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-primary-600, 0.05));
     }
 
     .donation-hub-card__icon {
@@ -271,7 +271,7 @@
 
   &--scan {
     .donation-hub-card__overlay {
-      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba(#f59e0b, 0.05));
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-secondary-500, 0.05));
     }
 
     .donation-hub-card__icon {
@@ -287,7 +287,7 @@
 
   &--history {
     .donation-hub-card__overlay {
-      background: linear-gradient(135deg, rgba(#a855f7, 0.05), rgba(#ec4899, 0.05));
+      background: linear-gradient(135deg, rgba($token-neutral-500, 0.05), rgba($token-neutral-600, 0.05));
     }
 
     .donation-hub-card__icon {
@@ -302,7 +302,7 @@
 
   &--browse {
     .donation-hub-card__overlay {
-      background: linear-gradient(135deg, rgba(#14b8a6, 0.05), rgba(#84cc16, 0.05));
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-secondary-500, 0.05));
     }
 
     .donation-hub-card__icon {

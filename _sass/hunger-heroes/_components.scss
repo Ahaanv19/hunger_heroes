@@ -168,14 +168,14 @@
 
 // ===== WEATHER WIDGET (professional solid styling) =====
 .weather-widget {
-  background: #1B5E20;
+  background: linear-gradient(135deg, $primary-500 0%, $accent-600 100%);
   border-radius: $radius-lg;
   padding: $spacing-md $spacing-lg;
-  color: white;
+  color: $token-text-inverse;
   display: flex;
   align-items: center;
   gap: $spacing-md;
-  border: 1px solid #155020;
+  border: 1px solid rgba($primary-700, 0.35);
 }
 
 .weather-icon {
