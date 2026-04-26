@@ -1,0 +1,469 @@
+// ==============================================
+// TRAINING HUB — Styles specific to training page
+// ==============================================
+
+@import "design-tokens";
+
+.training-hub-page {
+	--training-ink: #{$token-text-primary};
+	--training-slate: #{$token-secondary-500};
+	--training-line: #{rgba($token-secondary-500, 0.14)};
+	--training-surface: linear-gradient(180deg, #{$token-primary-50} 0%, #{$token-secondary-100} 100%);
+	--training-card: #{$token-bg-card};
+	--training-accent: #{$token-primary-500};
+	--training-accent-soft: #{rgba($token-primary-500, 0.12)};
+	--training-shadow: #{$token-shadow-xl};
+	--training-embed-fill: #{rgba($token-secondary-500, 0.04)};
+	--training-embed-stripe: #{rgba($token-secondary-500, 0.08)};
+	--training-embed-border: #{rgba($token-secondary-500, 0.24)};
+	--training-quiz-tint: #{rgba($token-warning, 0.08)};
+	--training-game-tint: #{rgba($token-success, 0.08)};
+	--training-game-border: #{rgba($token-success, 0.28)};
+	display: grid;
+	gap: $token-space-8;
+	margin: $token-space-6 0 $token-space-12;
+
+	section {
+		background: var(--training-card);
+		border: 1px solid var(--training-line);
+		border-radius: $token-radius-2xl;
+		box-shadow: var(--training-shadow);
+		overflow: hidden;
+	}
+}
+
+.training-hub-hero {
+	background: var(--training-surface);
+	padding: $token-space-10;
+}
+
+.training-hub-hero__eyebrow {
+	color: var(--training-accent);
+	font-size: 0.8rem;
+	font-weight: $token-weight-bold;
+	letter-spacing: 0.12em;
+	margin: 0 0 $token-space-3;
+	text-transform: uppercase;
+}
+
+.training-hub-hero h1,
+.training-hub-section__header h2,
+.training-hub-card h3 {
+	color: var(--training-ink);
+	margin: 0;
+}
+
+.training-hub-hero h1 {
+	font-size: clamp(2rem, 4vw, 3.2rem);
+	line-height: 1.05;
+	margin-bottom: $token-space-4;
+}
+
+.training-hub-hero p,
+.training-hub-section__header p,
+.training-hub-card p,
+.training-hub-embed__meta,
+.training-hub-quiz__list li,
+.training-hub-game__status {
+	color: var(--training-slate);
+}
+
+.training-hub-hero p {
+	font-size: 1.05rem;
+	margin: 0;
+	max-width: 46rem;
+}
+
+.training-hub-section {
+	padding: $token-space-8;
+}
+
+.training-hub-section__header {
+	margin-bottom: $token-space-6;
+}
+
+.training-hub-section__header h2 {
+	font-size: $token-text-2xl;
+	margin-bottom: $token-space-2;
+}
+
+.training-hub-grid {
+	display: grid;
+	gap: $token-space-5;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.training-hub-card {
+	background: linear-gradient(180deg, #{$token-bg-card} 0%, #{$token-secondary-50} 100%);
+	border: 1px solid var(--training-line);
+	border-radius: 20px;
+	padding: $token-space-5;
+}
+
+.training-hub-card__tag {
+	background: var(--training-accent-soft);
+	border-radius: $token-radius-full;
+	color: var(--training-accent);
+	display: inline-flex;
+	font-size: 0.78rem;
+	font-weight: $token-weight-bold;
+	letter-spacing: 0.04em;
+	margin-bottom: $token-space-4;
+	padding: 0.35rem 0.7rem;
+	text-transform: uppercase;
+}
+
+.training-hub-card h3 {
+	font-size: 1.15rem;
+	margin-bottom: $token-space-2;
+}
+
+.training-hub-card p {
+	margin: 0 0 $token-space-4;
+}
+
+.training-hub-pdf {
+	display: grid;
+	gap: $token-space-3;
+}
+
+.training-hub-pdf__button {
+	appearance: none;
+	background: none;
+	border: 0;
+	cursor: pointer;
+	padding: 0;
+	text-align: inherit;
+
+	&:disabled {
+		cursor: not-allowed;
+	}
+
+	&:focus-visible .training-hub-pdf__viewer {
+		box-shadow: 0 0 0 3px #{rgba($token-primary-500, 0.22)};
+		outline: none;
+	}
+
+	&:hover:not(:disabled) .training-hub-pdf__overlay,
+	&:focus-visible .training-hub-pdf__overlay {
+		opacity: 1;
+	}
+
+	&:hover:not(:disabled) .training-hub-pdf__viewer,
+	&:focus-visible .training-hub-pdf__viewer {
+		transform: translateY(-2px);
+	}
+
+	&:disabled .training-hub-pdf__overlay {
+		opacity: 0;
+	}
+}
+
+.training-hub-pdf__viewer {
+	align-items: center;
+	background: repeating-linear-gradient(
+		-45deg,
+		var(--training-embed-fill),
+		var(--training-embed-fill) 14px,
+		var(--training-embed-stripe) 14px,
+		var(--training-embed-stripe) 28px
+	);
+	border: 1px dashed var(--training-embed-border);
+	border-radius: $token-radius-xl;
+	display: grid;
+	aspect-ratio: 5 / 3;
+	overflow: hidden;
+	padding: 0;
+	place-items: center;
+	position: relative;
+	transition: transform $token-transition-fast, box-shadow $token-transition-fast;
+	width: 100%;
+}
+
+.training-hub-pdf__canvas {
+	background: $token-bg-card;
+	border-radius: inherit;
+	display: none;
+	height: 100%;
+	width: 100%;
+}
+
+.training-hub-pdf[data-pdf-ready='true'] {
+	.training-hub-pdf__canvas {
+		display: block;
+	}
+
+	.training-hub-pdf__placeholder {
+		display: none;
+	}
+	}
+
+.training-hub-pdf__placeholder {
+	color: var(--training-slate);
+	display: grid;
+	gap: $token-space-2;
+	justify-items: center;
+	padding: $token-space-4;
+	max-width: 15rem;
+	text-align: center;
+
+	strong {
+		color: var(--training-ink);
+		font-size: $token-text-base;
+	}
+}
+
+.training-hub-pdf__placeholder-note {
+	font-size: 0.92rem;
+	line-height: $token-leading-normal;
+}
+
+.training-hub-pdf__overlay {
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(18, 18, 18, 0.68) 100%);
+	bottom: 0;
+	color: $token-text-inverse;
+	font-size: $token-text-sm;
+	font-weight: $token-weight-semibold;
+	left: 0;
+	opacity: 0;
+	padding: $token-space-6 $token-space-4 $token-space-4;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	transition: opacity $token-transition-fast;
+}
+
+.training-hub-pdf__meta {
+	display: grid;
+	gap: $token-space-2;
+}
+
+.training-hub-pdf__link {
+	color: var(--training-accent);
+	font-size: $token-text-sm;
+	font-weight: $token-weight-semibold;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		text-decoration: underline;
+	}
+}
+
+.training-hub-pdf__status {
+	color: var(--training-slate);
+	font-size: 0.92rem;
+	line-height: $token-leading-normal;
+	margin: 0;
+
+	span {
+		color: var(--training-ink);
+		font-family: $token-font-mono;
+		font-size: 0.85rem;
+	}
+}
+
+.training-hub-lower {
+	display: grid;
+	gap: $token-space-6;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.training-hub-quiz,
+.training-hub-game {
+	border: 1px solid var(--training-line);
+	border-radius: 20px;
+	padding: $token-space-6;
+}
+
+.training-hub-quiz {
+	background: linear-gradient(180deg, var(--training-quiz-tint) 0%, #{$token-bg-card} 100%);
+}
+
+.training-hub-game {
+	background: linear-gradient(180deg, var(--training-game-tint) 0%, #{$token-bg-card} 100%);
+}
+
+.training-hub-quiz__list {
+	margin: $token-space-4 0 0;
+	padding-left: 1.1rem;
+}
+
+.training-hub-quiz__list li + li {
+	margin-top: 0.55rem;
+}
+
+.training-hub-game__shell {
+	align-items: center;
+	background: var(--training-game-tint);
+	border: 1px dashed var(--training-game-border);
+	border-radius: 18px;
+	display: grid;
+	margin-top: $token-space-4;
+	min-height: 220px;
+	padding: $token-space-4;
+	place-items: center;
+	text-align: center;
+}
+
+.training-hub-game__shell strong {
+	color: var(--training-ink);
+	display: block;
+	font-size: 1.02rem;
+	margin-bottom: 0.4rem;
+}
+
+.training-hub-game__status {
+	font-size: 0.95rem;
+	margin: 0;
+	max-width: 16rem;
+}
+
+body.training-hub-modal-open {
+	overflow: hidden;
+}
+
+.training-hub-modal {
+	align-items: center;
+	display: grid;
+	inset: 0;
+	padding: $token-space-5;
+	position: fixed;
+	z-index: $token-z-modal;
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+.training-hub-modal__backdrop {
+	background: rgba(15, 23, 42, 0.8);
+	inset: 0;
+	position: absolute;
+}
+
+.training-hub-modal__dialog {
+	background: $token-bg-card;
+	border: 1px solid #{rgba($token-secondary-500, 0.18)};
+	border-radius: $token-radius-2xl;
+	box-shadow: $token-shadow-xl;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	max-height: min(92vh, 1000px);
+	max-width: min(96vw, 1200px);
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	z-index: 1;
+}
+
+.training-hub-modal__header {
+	align-items: center;
+	border-bottom: 1px solid var(--training-line);
+	display: flex;
+	gap: $token-space-4;
+	justify-content: space-between;
+	padding: $token-space-5 $token-space-6;
+}
+
+.training-hub-modal__eyebrow {
+	color: var(--training-accent);
+	font-size: 0.78rem;
+	font-weight: $token-weight-bold;
+	letter-spacing: 0.08em;
+	margin: 0 0 $token-space-1;
+	text-transform: uppercase;
+}
+
+.training-hub-modal__header h2 {
+	color: var(--training-ink);
+	font-size: $token-text-xl;
+	margin: 0;
+}
+
+.training-hub-modal__actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: $token-space-3;
+	justify-content: flex-end;
+}
+
+.training-hub-modal__link,
+.training-hub-modal__close {
+	border-radius: $token-radius-full;
+	font-size: $token-text-sm;
+	font-weight: $token-weight-semibold;
+	padding: 0.7rem 1rem;
+	text-decoration: none;
+	transition: background-color $token-transition-fast, color $token-transition-fast, border-color $token-transition-fast;
+	white-space: nowrap;
+}
+
+.training-hub-modal__link {
+	background: #{rgba($token-primary-500, 0.1)};
+	color: var(--training-accent);
+
+	&:hover,
+	&:focus-visible {
+		background: #{rgba($token-primary-500, 0.16)};
+	}
+}
+
+.training-hub-modal__close {
+	background: transparent;
+	border: 1px solid var(--training-line);
+	color: var(--training-ink);
+	cursor: pointer;
+
+	&:hover,
+	&:focus-visible {
+		background: #{rgba($token-secondary-500, 0.08)};
+	}
+}
+
+.training-hub-modal__body {
+	background: $token-bg-section;
+	min-height: 0;
+	padding: $token-space-4;
+	}
+
+.training-hub-modal__frame {
+	background: $token-bg-card;
+	border: 0;
+	border-radius: $token-radius-lg;
+	min-height: min(78vh, 820px);
+	width: 100%;
+}
+
+@media (max-width: $token-bp-sm) {
+	.training-hub-hero,
+	.training-hub-section {
+		padding: $token-space-6;
+	}
+
+	.training-hub-modal {
+		padding: $token-space-3;
+	}
+
+	.training-hub-modal__header {
+		align-items: flex-start;
+		flex-direction: column;
+		padding: $token-space-4;
+	}
+
+	.training-hub-modal__actions {
+		justify-content: stretch;
+		width: 100%;
+	}
+
+	.training-hub-modal__link,
+	.training-hub-modal__close {
+		text-align: center;
+		width: 100%;
+	}
+
+	.training-hub-modal__body {
+		padding: $token-space-3;
+	}
+}

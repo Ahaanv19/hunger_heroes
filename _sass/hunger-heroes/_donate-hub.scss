@@ -1,0 +1,584 @@
+// ==========================================================
+// DONATE HUB — Step-by-step game hub at /donate/
+// ----------------------------------------------------------
+// Used by navigation/donate/donate.md.
+// Brand-aligned: deep forest green primary, slate neutrals,
+// soft shadows. Replaces the old rainbow-gradient look.
+// ==========================================================
+
+@import "design-tokens";
+@import "mixins";
+
+.hub {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: $token-space-5 $token-space-4 $token-space-12;
+  font-family: $token-font-sans;
+  color: $token-text-primary;
+}
+
+// ----------------------------------------------------------
+// Header
+// ----------------------------------------------------------
+.hub__head {
+  text-align: center;
+  margin-bottom: $token-space-6;
+}
+
+.hub__eyebrow {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: $token-radius-full;
+  background: $token-primary-50;
+  color: $token-primary-700;
+  font-size: $token-text-xs;
+  font-weight: $token-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: $token-tracking-wide;
+  border: 1px solid $token-primary-200;
+}
+
+.hub__title {
+  font-family: $token-font-display;
+  font-size: $token-text-4xl;
+  font-weight: $token-weight-bold;
+  color: $token-text-primary;
+  margin: $token-space-3 0 $token-space-2;
+  line-height: $token-leading-tight;
+}
+
+.hub__sub {
+  color: $token-text-secondary;
+  font-size: $token-text-base;
+  line-height: $token-leading-relaxed;
+  max-width: 38rem;
+  margin: 0 auto;
+}
+
+// ----------------------------------------------------------
+// Role selector — segmented control
+// ----------------------------------------------------------
+.hub__roles {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: $token-space-6 auto $token-space-6;
+  padding: 4px;
+  background: $token-neutral-100;
+  border: 1px solid $token-border-light;
+  border-radius: $token-radius-full;
+}
+
+.hub__role {
+  padding: $token-space-2 $token-space-5;
+  border-radius: $token-radius-full;
+  border: none;
+  background: transparent;
+  color: $token-text-secondary;
+  font-family: inherit;
+  font-size: $token-text-sm;
+  font-weight: $token-weight-semibold;
+  cursor: pointer;
+  transition: all $token-duration-fast ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: $token-text-primary;
+  }
+  &.is-active {
+    background: $token-primary-500;
+    color: $token-text-inverse;
+    box-shadow: $token-shadow-sm;
+  }
+}
+
+// Center the segmented control row
+.hub__roles-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+// ----------------------------------------------------------
+// Step tracker (cards above the canvas)
+// ----------------------------------------------------------
+.hub__tracker {
+  display: grid;
+  gap: $token-space-3;
+  margin: $token-space-6 0 $token-space-3;
+
+  &--r4 { grid-template-columns: repeat(4, 1fr); }
+  &--r5 { grid-template-columns: repeat(5, 1fr); }
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+.step-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: $token-space-4 $token-space-3;
+  background: $token-bg-card;
+  border: 1px solid $token-border-light;
+  border-radius: $token-radius-lg;
+  cursor: pointer;
+  text-align: center;
+  transition: all $token-duration-fast ease;
+
+  &:hover {
+    border-color: $token-primary-300;
+    transform: translateY(-1px);
+    box-shadow: $token-shadow-sm;
+  }
+
+  &__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: $token-radius-full;
+    background: $token-neutral-100;
+    color: $token-text-secondary;
+    font-size: $token-text-sm;
+    font-weight: $token-weight-bold;
+    border: 1px solid $token-border-light;
+    transition: all $token-duration-fast ease;
+  }
+
+  &__name {
+    font-size: $token-text-sm;
+    font-weight: $token-weight-semibold;
+    color: $token-text-primary;
+    line-height: $token-leading-snug;
+  }
+
+  &.is-done {
+    background: $token-primary-50;
+    border-color: $token-primary-300;
+
+    .step-card__num {
+      background: $token-primary-500;
+      color: $token-text-inverse;
+      border-color: $token-primary-500;
+    }
+    .step-card__name {
+      color: $token-primary-700;
+    }
+  }
+
+  &.is-active {
+    background: $token-bg-card;
+    border-color: $token-primary-500;
+    box-shadow: 0 0 0 3px rgba($token-primary-500, 0.15), $token-shadow-md;
+    transform: translateY(-2px);
+
+    .step-card__num {
+      background: $token-primary-500;
+      color: $token-text-inverse;
+      border-color: $token-primary-500;
+    }
+    .step-card__name {
+      color: $token-primary-700;
+    }
+  }
+}
+
+// ----------------------------------------------------------
+// Progress bar
+// ----------------------------------------------------------
+.hub__progress {
+  height: 6px;
+  background: $token-neutral-200;
+  border-radius: $token-radius-full;
+  overflow: hidden;
+  margin: $token-space-4 0 $token-space-6;
+
+  > div {
+    height: 100%;
+    background: $token-primary-500;
+    border-radius: $token-radius-full;
+    transition: width $token-duration-slow ease;
+    width: 0%;
+  }
+}
+
+// ----------------------------------------------------------
+// Canvas frame
+// ----------------------------------------------------------
+.hub__game {
+  position: relative;
+  border-radius: $token-radius-xl;
+  overflow: hidden;
+  border: 1px solid $token-border-light;
+  background: $token-bg-section;
+  box-shadow: $token-shadow-md;
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: $token-bg-section;
+  }
+}
+
+.hub__hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $token-space-3;
+  padding: $token-space-3 $token-space-5;
+  background: $token-bg-card;
+  border-top: 1px solid $token-border-light;
+  font-size: $token-text-sm;
+  color: $token-text-secondary;
+}
+
+.hub__hud-current {
+  font-weight: $token-weight-semibold;
+  color: $token-text-primary;
+}
+
+.hub__key {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: $token-radius-sm;
+  background: $token-neutral-100;
+  border: 1px solid $token-border-light;
+  color: $token-text-primary;
+  font-family: $token-font-mono;
+  font-size: $token-text-xs;
+  font-weight: $token-weight-semibold;
+  margin: 0 2px;
+  line-height: 1.4;
+}
+
+.hub__hud-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hub__hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: $token-radius-md;
+  font-family: inherit;
+  font-size: $token-text-xs;
+  font-weight: $token-weight-semibold;
+  cursor: pointer;
+  border: 1px solid $token-border-default;
+  background: $token-bg-card;
+  color: $token-text-secondary;
+  transition: all $token-duration-fast ease;
+
+  &:hover:not(:disabled) {
+    background: $token-neutral-100;
+    color: $token-text-primary;
+    border-color: $token-neutral-400;
+  }
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: $token-primary-500;
+    border-color: $token-primary-500;
+    color: $token-text-inverse;
+
+    &:hover:not(:disabled) {
+      background: $token-primary-600;
+      border-color: $token-primary-600;
+      color: $token-text-inverse;
+    }
+  }
+}
+
+// ----------------------------------------------------------
+// Welcome overlay
+// ----------------------------------------------------------
+.hub__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $token-space-8;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+  text-align: center;
+}
+
+.hub__overlay-card {
+  max-width: 32rem;
+
+  h2 {
+    font-family: $token-font-display;
+    font-size: $token-text-2xl;
+    font-weight: $token-weight-bold;
+    color: $token-primary-700;
+    margin: 0 0 $token-space-3;
+  }
+  p {
+    color: $token-text-secondary;
+    font-size: $token-text-base;
+    line-height: $token-leading-relaxed;
+    margin: 0 0 $token-space-3;
+  }
+}
+
+.hub__start-btn {
+  margin-top: $token-space-4;
+  padding: $token-space-3 $token-space-8;
+  border-radius: $token-radius-md;
+  border: 1px solid $token-primary-500;
+  background: $token-primary-500;
+  color: $token-text-inverse;
+  font-family: inherit;
+  font-size: $token-text-base;
+  font-weight: $token-weight-semibold;
+  cursor: pointer;
+  box-shadow: $token-shadow-sm;
+  transition: all $token-duration-fast ease;
+
+  &:hover {
+    background: $token-primary-600;
+    border-color: $token-primary-600;
+    box-shadow: $token-shadow-md;
+    transform: translateY(-1px);
+  }
+}
+
+// ----------------------------------------------------------
+// Optional tools (extras grid) + section title
+// ----------------------------------------------------------
+.hub__section-title {
+  margin: $token-space-10 0 $token-space-3;
+  font-size: $token-text-xs;
+  font-weight: $token-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: $token-tracking-wide;
+  color: $token-text-muted;
+}
+
+.hub__extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: $token-space-3;
+}
+
+.extra-card {
+  display: flex;
+  align-items: center;
+  gap: $token-space-3;
+  padding: $token-space-3 $token-space-4;
+  background: $token-bg-card;
+  border: 1px solid $token-border-light;
+  border-radius: $token-radius-lg;
+  text-decoration: none;
+  color: $token-text-primary;
+  transition: all $token-duration-fast ease;
+
+  &:hover {
+    border-color: $token-primary-300;
+    transform: translateY(-1px);
+    box-shadow: $token-shadow-sm;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $token-radius-md;
+    background: $token-primary-50;
+    color: $token-primary-600;
+    border: 1px solid $token-primary-200;
+  }
+
+  &__name {
+    font-size: $token-text-sm;
+    font-weight: $token-weight-semibold;
+    color: $token-text-primary;
+    line-height: 1.3;
+  }
+  &__desc {
+    font-size: $token-text-xs;
+    color: $token-text-secondary;
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+}
+
+// ----------------------------------------------------------
+// Stats grid
+// ----------------------------------------------------------
+.hub__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: $token-space-3;
+}
+
+.stat-tile {
+  background: $token-bg-card;
+  border: 1px solid $token-border-light;
+  border-radius: $token-radius-lg;
+  padding: $token-space-4;
+  text-align: center;
+  transition: all $token-duration-fast ease;
+
+  &:hover {
+    border-color: $token-primary-300;
+    box-shadow: $token-shadow-sm;
+  }
+
+  &__num {
+    font-family: $token-font-display;
+    font-size: $token-text-3xl;
+    font-weight: $token-weight-bold;
+    color: $token-primary-600;
+    line-height: 1;
+  }
+  &__lbl {
+    margin-top: 6px;
+    font-size: $token-text-xs;
+    font-weight: $token-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: $token-tracking-wide;
+    color: $token-text-muted;
+  }
+}
+
+// ==========================================================
+// DARK MODE
+// ==========================================================
+.dark .hub {
+  color: #e2e8f0;
+
+  &__title { color: #f1f5f9; }
+  &__sub   { color: #94a3b8; }
+
+  &__eyebrow {
+    background: rgba($token-primary-500, 0.18);
+    border-color: rgba($token-primary-400, 0.4);
+    color: $token-primary-200;
+  }
+
+  &__roles {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  &__role {
+    color: #94a3b8;
+    &:hover { color: #f1f5f9; }
+    &.is-active {
+      background: $token-primary-500;
+      color: #fff;
+    }
+  }
+
+  &__progress {
+    background: rgba(255, 255, 255, 0.08);
+    > div { background: $token-primary-400; }
+  }
+
+  &__game {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.08);
+    canvas { background: #0f172a; }
+  }
+  &__hud {
+    background: #1e293b;
+    border-top-color: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+  }
+  &__hud-current { color: #f1f5f9; }
+  &__key {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+  }
+  &__hud-btn {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #cbd5e1;
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f1f5f9;
+    }
+    &--primary {
+      background: $token-primary-500;
+      border-color: $token-primary-500;
+      &:hover:not(:disabled) {
+        background: $token-primary-400;
+        border-color: $token-primary-400;
+      }
+    }
+  }
+
+  &__overlay {
+    background: rgba(15, 23, 42, 0.96);
+  }
+  &__overlay-card {
+    h2 { color: $token-primary-300; }
+    p  { color: #94a3b8; }
+  }
+
+  &__section-title { color: #94a3b8; }
+}
+
+.dark .step-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+
+  &__num {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+  }
+  &__name { color: #e2e8f0; }
+
+  &.is-done {
+    background: rgba($token-primary-500, 0.15);
+    border-color: rgba($token-primary-400, 0.5);
+    .step-card__name { color: $token-primary-200; }
+  }
+  &.is-active {
+    background: #1e293b;
+    border-color: $token-primary-400;
+    box-shadow: 0 0 0 3px rgba($token-primary-400, 0.25), 0 4px 12px rgba(0, 0, 0, 0.4);
+    .step-card__name { color: $token-primary-200; }
+  }
+}
+
+.dark .extra-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+
+  &__icon {
+    background: rgba($token-primary-500, 0.18);
+    border-color: rgba($token-primary-400, 0.4);
+    color: $token-primary-200;
+  }
+  &__name { color: #f1f5f9; }
+  &__desc { color: #94a3b8; }
+}
+
+.dark .stat-tile {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+
+  &__num { color: $token-primary-300; }
+  &__lbl { color: #94a3b8; }
+}

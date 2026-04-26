@@ -152,6 +152,9 @@ menu: nav/home.html
       </a>
     </div>
 
+    <!-- The shared Donate game-flow nav panel (Prev / Hub / Continue) is auto-injected
+         by _layouts/base.html via _includes/donate-flow-nav.html on every /donate/* page. -->
+
     <!-- Info -->
     <div class="mt-10 p-5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
       <div class="flex gap-3">
@@ -217,6 +220,9 @@ menu: nav/home.html
     'fish': 'bg-cyan-100 text-cyan-800',
     'none': 'bg-green-100 text-green-800'
   };
+
+  // (Game flow Continue/Back panel is provided by the shared include
+  //  _includes/donate-flow-nav.html, auto-injected on every /donate/* page.)
 
   document.addEventListener('DOMContentLoaded', async () => {
     // Try to get data from sessionStorage first, then from URL + backend

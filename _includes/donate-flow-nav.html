@@ -1,0 +1,212 @@
+<!-- ==========================================================
+     DONATE FLOW NAV  (auto-injected on /donate/* sub-pages)
+     Styled via _sass/hunger-heroes/_flow-nav.scss using brand tokens.
+     ========================================================== -->
+<nav id="hh-flow-nav" class="flow-nav is-hidden" aria-label="Donation flow navigation">
+  <div class="flow-nav__header">
+    <div class="flow-nav__header-info">
+      <span class="flow-nav__crest" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+      </span>
+      <div>
+        <div id="hh-flow-role" class="flow-nav__role-label">Donor Flow</div>
+        <div id="hh-flow-progress-text" class="flow-nav__progress-text">Step — of —</div>
+      </div>
+    </div>
+    <div id="hh-flow-pills" class="flow-nav__pills" aria-hidden="true"></div>
+  </div>
+
+  <div class="flow-nav__body">
+    <div class="flow-nav__next">
+      <div class="flow-nav__next-label">Up next</div>
+      <div id="hh-flow-next-name" class="flow-nav__next-name">—</div>
+      <div id="hh-flow-next-desc" class="flow-nav__next-desc">—</div>
+    </div>
+    <div class="flow-nav__actions">
+      <button id="hh-flow-prev-btn" type="button"
+              class="flow-nav__btn flow-nav__btn--ghost is-hidden" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span id="hh-flow-prev-label">Previous</span>
+      </button>
+      <a id="hh-flow-hub-btn" href="{{site.baseurl}}/donate/" class="flow-nav__btn flow-nav__btn--ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Hub
+      </a>
+      <button id="hh-flow-next-btn" type="button" class="flow-nav__btn flow-nav__btn--primary">
+        <span id="hh-flow-next-label">Continue</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="hh-flow-role-switch" class="flow-nav__role-switch">
+    <span class="flow-nav__role-switch-label">Switch flow</span>
+    <div id="hh-flow-role-buttons" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+  </div>
+</nav>
+
+<script>
+(function () {
+  var BASE = '{{site.baseurl}}';
+
+  var FLOWS = {
+    donor: [
+      { id:'create',      num:1, name:'Create Donation', href: BASE+'/donate/create',      desc:'Enter food details and donor info.' },
+      { id:'barcode',     num:2, name:'Print Label',     href: BASE+'/donate/barcode',     desc:'Generate and print the QR label.' },
+      { id:'manage',      num:3, name:'Manage Status',   href: BASE+'/donate/manage',      desc:'Mark in-transit or delivered.' },
+      { id:'history',     num:4, name:'View History',    href: BASE+'/donate/history',     desc:'Track your past donations.' },
+      { id:'leaderboard', num:5, name:'Leaderboard',     href: BASE+'/donate/leaderboard', desc:'See your impact ranking.' }
+    ],
+    receiver: [
+      { id:'match',      num:1, name:'Find Food',     href: BASE+'/donate/match',      desc:'Smart match by zip and needs.' },
+      { id:'browse',     num:2, name:'Browse & Sort', href: BASE+'/donate/browse',     desc:'Sort by expiry, distance, quantity.' },
+      { id:'categories', num:3, name:'Pick Category', href: BASE+'/donate/categories', desc:'Filter by food type.' },
+      { id:'scan',       num:4, name:'Scan & Verify', href: BASE+'/donate/scan',       desc:'Confirm pickup with QR.' }
+    ],
+    volunteer: [
+      { id:'browse',  num:1, name:'See Open Donations', href: BASE+'/donate/browse',  desc:'Find packages to deliver.' },
+      { id:'scan',    num:2, name:'Scan Pickup',        href: BASE+'/donate/scan',    desc:'Scan QR at the donor location.' },
+      { id:'manage',  num:3, name:'Update In-Transit',  href: BASE+'/donate/manage',  desc:'Mark as in-transit or delivered.' },
+      { id:'network', num:4, name:'View Network',       href: BASE+'/donate/network', desc:'See donor and receiver connections.' }
+    ]
+  };
+  var ROLE_LABELS = { donor:'Donor Flow', receiver:'Receiver Flow', volunteer:'Volunteer Flow' };
+
+  function detectPageId() {
+    var p = window.location.pathname.replace(/\/+$/, '');
+    var seg = p.split('/').pop();
+    if (!seg || seg === 'donate') return null;
+    return seg.toLowerCase();
+  }
+
+  function rolesContaining(pageId) {
+    return Object.keys(FLOWS).filter(function (r) {
+      return FLOWS[r].some(function (s) { return s.id === pageId; });
+    });
+  }
+
+  function loadSaved() {
+    try { return JSON.parse(sessionStorage.getItem('hh_donate_flow') || 'null'); } catch (_) { return null; }
+  }
+  function saveState(role, idx, visited) {
+    try {
+      sessionStorage.setItem('hh_donate_flow', JSON.stringify({
+        role: role, idx: idx, visited: Array.from(visited)
+      }));
+    } catch (_) {}
+  }
+
+  function show(el) { el.classList.remove('is-hidden'); el.removeAttribute('hidden'); }
+  function hide(el) { el.classList.add('is-hidden'); el.setAttribute('hidden', ''); }
+
+  function render(role, pageId) {
+    var steps = FLOWS[role];
+    var idx = steps.findIndex(function (s) { return s.id === pageId; });
+    if (idx === -1) return;
+
+    var saved = loadSaved();
+    var visited = new Set((saved && saved.visited) || []);
+    for (var i = 0; i <= idx; i++) visited.add(steps[i].id);
+    saveState(role, Math.min(steps.length - 1, idx + 1), visited);
+
+    var panel = document.getElementById('hh-flow-nav');
+    if (!panel) return;
+    show(panel);
+
+    document.getElementById('hh-flow-role').textContent = ROLE_LABELS[role] || 'Game Flow';
+    document.getElementById('hh-flow-progress-text').textContent =
+      'Step ' + steps[idx].num + ' of ' + steps.length + ' · ' + steps[idx].name;
+
+    var pills = document.getElementById('hh-flow-pills');
+    pills.innerHTML = '';
+    steps.forEach(function (s, i) {
+      var dot = document.createElement('span');
+      dot.className = 'flow-nav__pill' +
+        (i < idx ? ' flow-nav__pill--done' : '') +
+        (i === idx ? ' flow-nav__pill--current' : '');
+      dot.title = 'Step ' + s.num + ' — ' + s.name;
+      pills.appendChild(dot);
+    });
+
+    var prevBtn = document.getElementById('hh-flow-prev-btn');
+    var prevLabel = document.getElementById('hh-flow-prev-label');
+    if (idx > 0) {
+      var prev = steps[idx - 1];
+      show(prevBtn);
+      prevLabel.textContent = prev.name;
+      prevBtn.onclick = function () { window.location.href = prev.href; };
+    } else {
+      hide(prevBtn);
+    }
+
+    var isLast = idx === steps.length - 1;
+    var nextEl = isLast ? null : steps[idx + 1];
+    var nameEl = document.getElementById('hh-flow-next-name');
+    var descEl = document.getElementById('hh-flow-next-desc');
+    var nextBtn = document.getElementById('hh-flow-next-btn');
+    var nextLabel = document.getElementById('hh-flow-next-label');
+
+    if (isLast) {
+      nameEl.textContent = 'Flow complete';
+      descEl.textContent = 'Return to the hub to start a new journey or switch roles.';
+      nextLabel.textContent = 'Back to Hub';
+      nextBtn.onclick = function () { window.location.href = BASE + '/donate/'; };
+    } else {
+      nameEl.textContent = 'Step ' + nextEl.num + ' · ' + nextEl.name;
+      descEl.textContent = nextEl.desc;
+      nextLabel.textContent = 'Continue to ' + nextEl.name;
+      nextBtn.onclick = function () { window.location.href = nextEl.href; };
+    }
+
+    var roles = rolesContaining(pageId);
+    var box = document.getElementById('hh-flow-role-switch');
+    var btns = document.getElementById('hh-flow-role-buttons');
+    btns.innerHTML = '';
+    if (roles.length > 1) {
+      roles.forEach(function (r) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'flow-nav__role-btn' + (r === role ? ' is-active' : '');
+        b.textContent = ROLE_LABELS[r] || r;
+        b.onclick = function () { if (r !== role) render(r, pageId); };
+        btns.appendChild(b);
+      });
+      box.classList.add('is-visible');
+    } else {
+      box.classList.remove('is-visible');
+    }
+  }
+
+  function init() {
+    var pageId = detectPageId();
+    if (!pageId) return;
+    var roles = rolesContaining(pageId);
+    if (roles.length === 0) return;
+
+    var saved = loadSaved();
+    var role = (saved && roles.indexOf(saved.role) !== -1) ? saved.role : roles[0];
+    render(role, pageId);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>

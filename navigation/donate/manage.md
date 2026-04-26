@@ -177,31 +177,51 @@ menu: nav/home.html
   // This is a WORKER function — does the actual API call
   // ============================================
   async function executeDonationAction(id, action) {
-    // Step 1: Try Spring first (primary — these routes are required)
+    // Step 1: Try Spring first (plural /api/donations/{id}/{action})
+    let springErr = null;
     try {
       await springFetch(`${javaURI}/api/donations/${id}/${action}`, { method: 'POST' });
       return { success: true, source: 'spring' };
-    } catch (springErr) {
-      // Step 2: Fall back to Flask status PATCH if possible
-      // Map manage-page actions → backend status vocabulary
-      const flaskActionMap = {
-        accept: 'accepted',
-        deliver: 'delivered',
-        cancel: 'cancelled',
-        undo: 'active'  // undo reverts to active
-      };
-      const newStatus = flaskActionMap[action];
-      if (newStatus) {
-        try {
-          await flaskFetch(`${pythonURI}/api/donations/${id}/status`, {
-            method: 'PATCH',
-            body: JSON.stringify({ status: newStatus })
-          });
-          return { success: true, source: 'flask' };
-        } catch (flaskErr) { /* both failed */ }
-      }
-      throw springErr;
+    } catch (e) {
+      springErr = e;
+      console.log('Spring action failed, trying Flask…', e.message);
     }
+
+    // Step 2: Flask fallback — singular /api/donation/{id}/{action}
+    // Flask supports: accept, deliver (per BACKEND_BARCODE_API_PROMPT.md)
+    // cancel/undo: try both singular & plural endpoints
+    const flaskEndpoints = {
+      accept:  [`${pythonURI}/api/donation/${id}/accept`,  `${pythonURI}/api/donations/${id}/accept`],
+      deliver: [`${pythonURI}/api/donation/${id}/deliver`, `${pythonURI}/api/donations/${id}/deliver`],
+      cancel:  [`${pythonURI}/api/donation/${id}/cancel`,  `${pythonURI}/api/donations/${id}/cancel`],
+      undo:    [`${pythonURI}/api/donation/${id}/undo`,    `${pythonURI}/api/donations/${id}/undo`]
+    };
+    const urls = flaskEndpoints[action] || [];
+    for (const url of urls) {
+      try {
+        await flaskFetch(url, { method: 'POST', body: JSON.stringify({}) });
+        return { success: true, source: 'flask' };
+      } catch (e) { /* try next */ }
+    }
+
+    // Step 3: Last-resort generic status PATCH (only for cancel/undo where no action endpoint exists)
+    const statusMap = { accept: 'accepted', deliver: 'delivered', cancel: 'cancelled', undo: 'active' };
+    const newStatus = statusMap[action];
+    if (newStatus) {
+      const patchUrls = [
+        `${pythonURI}/api/donation/${id}/status`,
+        `${pythonURI}/api/donations/${id}/status`
+      ];
+      for (const url of patchUrls) {
+        try {
+          await flaskFetch(url, { method: 'PATCH', body: JSON.stringify({ status: newStatus }) });
+          return { success: true, source: 'flask' };
+        } catch (e) { /* try next */ }
+      }
+    }
+
+    // Everything failed — surface original Spring error (usually auth)
+    throw springErr || new Error(ERROR_TYPES.BACKEND_UNAVAILABLE);
   }
 
   // ============================================
@@ -227,9 +247,14 @@ menu: nav/home.html
       .catch(err => {
         btn.disabled = false;
         btn.textContent = origText;
-        const msg = err.message === ERROR_TYPES.AUTHENTICATION_REQUIRED
-          ? 'Login required for this action'
-          : getErrorMessage(err);
+        let msg;
+        if (err.message === ERROR_TYPES.AUTHENTICATION_REQUIRED) {
+          msg = '🔒 Session expired — please log in again';
+        } else if (err.message && err.message.startsWith('HTTP_ERROR_4')) {
+          msg = `Action not allowed (${err.message.replace('HTTP_ERROR_', '')})`;
+        } else {
+          msg = getErrorMessage(err);
+        }
         showToast(msg, 'error');
       });
   });
