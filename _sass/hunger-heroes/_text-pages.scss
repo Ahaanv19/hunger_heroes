@@ -1,0 +1,122 @@
+// ==============================================
+// TEXT PAGES — Shared spacing and typography
+// ==============================================
+
+@import "design-tokens";
+@import "mixins";
+
+main {
+  > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre, table) {
+    max-width: 70ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  > :is(h1, h2, h3, h4, h5, h6) {
+    color: $token-text-primary;
+    line-height: $token-leading-tight;
+    margin-top: $token-space-10;
+    margin-bottom: $token-space-4;
+    font-family: $token-font-display;
+    letter-spacing: $token-tracking-tight;
+  }
+
+  > h1 {
+    font-size: $token-text-4xl;
+  }
+
+  > h2 {
+    font-size: $token-text-3xl;
+  }
+
+  > h3 {
+    font-size: $token-text-2xl;
+  }
+
+  > h4,
+  > h5,
+  > h6 {
+    font-size: $token-text-xl;
+  }
+
+  > :is(p, ul, ol, blockquote, pre, table) {
+    color: $token-text-secondary;
+    line-height: $token-leading-relaxed;
+    margin-bottom: $token-space-5;
+  }
+
+  > p {
+    font-size: $token-text-lg;
+  }
+
+  > ul,
+  > ol {
+    padding-left: $token-space-8;
+  }
+
+  li {
+    margin-bottom: $token-space-2;
+  }
+
+  > blockquote {
+    padding: $token-space-5 $token-space-6;
+    border-left: 4px solid $token-primary-500;
+    border-radius: $token-radius-lg;
+    background: $token-bg-section;
+    color: $token-text-primary;
+  }
+
+  > pre {
+    padding: $token-space-5;
+    border-radius: $token-radius-lg;
+    background: $token-neutral-900;
+    color: $token-text-inverse;
+    overflow-x: auto;
+  }
+
+  > table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  > table th,
+  > table td {
+    border: 1px solid $token-border-light;
+    padding: $token-space-3 $token-space-4;
+  }
+
+  > table th {
+    background: $token-neutral-100;
+    color: $token-text-primary;
+  }
+}
+
+.dark main {
+  > :is(h1, h2, h3, h4, h5, h6) {
+    color: $token-text-inverse;
+  }
+
+  > :is(p, ul, ol, blockquote, pre, table) {
+    color: $token-neutral-300;
+  }
+
+  > blockquote {
+    background: $token-neutral-800;
+    color: $token-text-inverse;
+  }
+
+  > pre {
+    background: $token-neutral-900;
+    color: $token-text-inverse;
+  }
+
+  > table th {
+    background: $token-neutral-800;
+    color: $token-text-inverse;
+  }
+
+  > table th,
+  > table td {
+    border-color: $token-neutral-700;
+  }
+}

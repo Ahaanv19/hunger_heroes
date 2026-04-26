@@ -33,6 +33,52 @@
   @include shimmer-button($green-600, $emerald-600);
 }
 
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-lg;
+  font-weight: 600;
+  transition: all $transition-normal;
+  box-shadow: $shadow-medium;
+
+  &:hover {
+    box-shadow: $shadow-large;
+  }
+}
+
+.cta-button--primary {
+  background: $primary-500;
+  color: $token-text-inverse;
+  border: 1px solid $primary-600;
+
+  &:hover {
+    background: $primary-600;
+  }
+}
+
+.cta-button--secondary {
+  background: $surface;
+  color: $primary-600;
+  border: 1px solid $primary-300;
+
+  &:hover {
+    border-color: $primary-400;
+  }
+}
+
+.dark .cta-button--secondary {
+  background: $surface-dark;
+  color: $primary-400;
+  border-color: $primary-700;
+
+  &:hover {
+    border-color: $primary-600;
+  }
+}
+
 // ===== NAV LINK =====
 .nav-link {
   @include animated-underline;
@@ -122,14 +168,14 @@
 
 // ===== WEATHER WIDGET (professional solid styling) =====
 .weather-widget {
-  background: #1B5E20;
+  background: linear-gradient(135deg, $primary-500 0%, $accent-600 100%);
   border-radius: $radius-lg;
   padding: $spacing-md $spacing-lg;
-  color: white;
+  color: $token-text-inverse;
   display: flex;
   align-items: center;
   gap: $spacing-md;
-  border: 1px solid #155020;
+  border: 1px solid rgba($primary-700, 0.35);
 }
 
 .weather-icon {

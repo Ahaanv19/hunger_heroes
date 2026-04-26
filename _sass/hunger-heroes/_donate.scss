@@ -6,6 +6,388 @@
 @import "mixins";
 
 // ---------------------------------------------------------
+// 0. DONATE PAGE SHELLS AND REUSABLE CARDS
+// ---------------------------------------------------------
+.donate-page {
+  padding: $token-space-8 $token-space-4 $token-space-16;
+
+  @include respond-to('sm') {
+    padding-left: $token-space-6;
+    padding-right: $token-space-6;
+  }
+
+  @include respond-to('lg') {
+    padding-top: $token-space-10;
+    padding-bottom: $token-space-20;
+  }
+
+  &__container {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  &__narrow {
+    max-width: 64rem;
+    margin: 0 auto;
+  }
+
+  &__back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: $token-space-2;
+    margin-bottom: $token-space-6;
+    color: $token-text-secondary;
+    font-weight: $token-weight-medium;
+
+    &:hover {
+      color: $token-text-link;
+    }
+  }
+
+  &__hero {
+    text-align: center;
+    margin-bottom: $token-space-12;
+  }
+
+  &__hero-icon {
+    width: 5rem;
+    height: 5rem;
+    border-radius: $token-radius-lg;
+    background: $token-primary-500;
+    box-shadow: $token-shadow-md;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $token-space-6;
+  }
+
+  &__title {
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: $token-weight-bold;
+    color: $token-text-primary;
+    line-height: $token-leading-tight;
+    margin-bottom: $token-space-3;
+  }
+
+  &__lead {
+    max-width: 42rem;
+    margin: 0 auto;
+    color: $token-text-secondary;
+    font-size: $token-text-xl;
+    line-height: $token-leading-relaxed;
+  }
+
+  &__panel {
+    background: $token-bg-card;
+    border: 1px solid $token-border-light;
+    border-radius: $token-radius-lg;
+    box-shadow: $token-shadow-md;
+  }
+
+  &__panel--padded {
+    padding: $token-space-6;
+
+    @include respond-to('sm') {
+      padding: $token-space-8;
+    }
+  }
+
+  &__section {
+    margin-bottom: $token-space-12;
+  }
+
+  &__section-title {
+    display: inline-block;
+    padding: $token-space-2 $token-space-4;
+    background: $token-neutral-100;
+    color: $token-neutral-700;
+    border-radius: $token-radius-md;
+    font-size: $token-text-sm;
+    font-weight: $token-weight-semibold;
+  }
+
+  &__section-heading {
+    color: $token-text-primary;
+    font-weight: $token-weight-bold;
+    font-size: $token-text-2xl;
+
+    @include respond-to('md') {
+      font-size: $token-text-3xl;
+    }
+  }
+}
+
+.dark .donate-page {
+  &__title,
+  &__section-heading {
+    color: $token-text-inverse;
+  }
+
+  &__lead {
+    color: $token-neutral-400;
+  }
+
+  &__panel {
+    background: $surface-dark;
+    border-color: $token-neutral-700;
+  }
+
+  &__section-title {
+    background: $token-neutral-700;
+    color: $token-neutral-300;
+  }
+}
+
+.donation-hub-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $token-space-6;
+  margin-bottom: $token-space-12;
+
+  @include respond-to('md') {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.donation-hub-card {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  padding: $token-space-8;
+  border-radius: $token-radius-lg;
+  border: 1px solid rgba($token-border-light, 0.7);
+  background: $token-bg-card;
+  box-shadow: $token-shadow-md;
+  color: inherit;
+  transition: transform $token-transition-normal, box-shadow $token-transition-normal, border-color $token-transition-normal;
+
+  &:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: $token-shadow-lg;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity $token-transition-normal;
+  }
+
+  &:hover &__overlay {
+    opacity: 1;
+  }
+
+  &__content {
+    position: relative;
+  }
+
+  &__icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: $token-radius-lg;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: $token-shadow-md;
+    margin-bottom: $token-space-5;
+    transition: transform $token-transition-normal;
+
+    .donation-hub-card:hover & {
+      transform: scale(1.08);
+    }
+  }
+
+  &__title {
+    color: $token-text-primary;
+    font-size: $token-text-xl;
+    font-weight: $token-weight-bold;
+    margin-bottom: $token-space-2;
+  }
+
+  &__description {
+    color: $token-text-secondary;
+    font-size: $token-text-sm;
+    line-height: $token-leading-relaxed;
+    margin-bottom: $token-space-4;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: $token-space-1;
+    font-size: $token-text-sm;
+    font-weight: $token-weight-semibold;
+    transition: gap $token-transition-normal;
+
+    .donation-hub-card:hover & {
+      gap: $token-space-2;
+    }
+  }
+
+  &--match {
+    .donation-hub-card__overlay {
+      background: linear-gradient(135deg, rgba($token-secondary-500, 0.05), rgba($token-primary-400, 0.05));
+    }
+
+    .donation-hub-card__icon {
+      background: $token-secondary-500;
+      color: $token-text-inverse;
+    }
+
+    .donation-hub-card__cta {
+      color: $token-secondary-600;
+    }
+  }
+
+  &--manage {
+    .donation-hub-card__overlay {
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-secondary-600, 0.05));
+    }
+
+    .donation-hub-card__icon {
+      background: $token-secondary-600;
+      color: $token-text-inverse;
+    }
+
+    .donation-hub-card__cta {
+      color: $token-secondary-600;
+    }
+  }
+
+  &--create {
+    .donation-hub-card__overlay {
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-primary-600, 0.05));
+    }
+
+    .donation-hub-card__icon {
+      background: $token-primary-500;
+      color: $token-text-inverse;
+    }
+
+    .donation-hub-card__cta {
+      color: $token-primary-600;
+    }
+  }
+
+  &--scan {
+    .donation-hub-card__overlay {
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-secondary-500, 0.05));
+    }
+
+    .donation-hub-card__icon {
+      background: linear-gradient(135deg, $token-primary-500, $token-secondary-600);
+      color: $token-text-inverse;
+      border-radius: $token-radius-2xl;
+    }
+
+    .donation-hub-card__cta {
+      color: $token-primary-600;
+    }
+  }
+
+  &--history {
+    .donation-hub-card__overlay {
+      background: linear-gradient(135deg, rgba($token-neutral-500, 0.05), rgba($token-neutral-600, 0.05));
+    }
+
+    .donation-hub-card__icon {
+      background: $token-neutral-600;
+      color: $token-text-inverse;
+    }
+
+    .donation-hub-card__cta {
+      color: $token-neutral-600;
+    }
+  }
+
+  &--browse {
+    .donation-hub-card__overlay {
+      background: linear-gradient(135deg, rgba($token-primary-500, 0.05), rgba($token-secondary-500, 0.05));
+    }
+
+    .donation-hub-card__icon {
+      background: $token-primary-500;
+      color: $token-text-inverse;
+    }
+
+    .donation-hub-card__cta {
+      color: $token-primary-600;
+    }
+  }
+}
+
+.dark .donation-hub-card {
+  background: rgba($token-neutral-800, 0.8);
+  border-color: rgba($token-neutral-700, 0.8);
+
+  &__title {
+    color: $token-text-inverse;
+  }
+
+  &__description {
+    color: $token-neutral-400;
+  }
+
+  &--history .donation-hub-card__cta {
+    color: $token-neutral-400;
+  }
+}
+
+.donation-stats-grid {
+  display: grid;
+  gap: $token-space-4;
+
+  &--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @include respond-to('md') {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &--three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @include respond-to('md') {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+
+.donation-stat {
+  background: $token-bg-card;
+  border: 1px solid rgba($token-border-light, 0.7);
+  border-radius: $token-radius-lg;
+  padding: $token-space-5;
+  text-align: center;
+  box-shadow: $token-shadow-md;
+
+  &__value {
+    font-size: 1.875rem;
+    line-height: 1;
+    font-weight: $token-weight-bold;
+    margin-bottom: $token-space-1;
+  }
+
+  &__label {
+    font-size: $token-text-xs;
+    font-weight: $token-weight-semibold;
+    color: $token-neutral-400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+}
+
+.dark .donation-stat {
+  background: rgba($token-neutral-800, 0.8);
+  border-color: rgba($token-neutral-700, 0.8);
+
+  &__label {
+    color: $token-neutral-400;
+  }
+}
+
+// ---------------------------------------------------------
 // 1. FILTER BUTTONS (History Page)
 // ---------------------------------------------------------
 .filter-btn {
