@@ -1,0 +1,312 @@
+// ==========================================================
+// DESIGN TOKENS — Hunger Heroes Shared Token System
+// ==========================================================
+// Single source of truth for colors, typography, spacing,
+// borders, shadows, and transitions across the entire app.
+// Derived from the Figma wireframes (green-themed palette).
+// ==========================================================
+
+// ---------------------------------------------------------
+// 1. COLOR TOKENS
+// ---------------------------------------------------------
+
+// --- Primary (Deep Forest Green) ---
+$token-primary-50:    #f0faf5;
+$token-primary-100:   #dceee7;
+$token-primary-200:   #b8dccf;
+$token-primary-300:   #75b8a3;
+$token-primary-400:   #409678;
+$token-primary-500:   #1B5E20;   // Main brand green (buttons, accents)
+$token-primary-600:   #1a5420;   // Hover / active state
+$token-primary-700:   #155020;
+$token-primary-800:   #0d3817;
+$token-primary-900:   #051f0d;
+
+// --- Secondary (Slate Gray) ---
+$token-secondary-50:  #f8fafb;
+$token-secondary-100: #eef1f3;
+$token-secondary-200: #dde4e8;
+$token-secondary-300: #c5cfd6;
+$token-secondary-400: #9ba8b3;
+$token-secondary-500: #455A64;
+$token-secondary-600: #3d505b;
+$token-secondary-700: #354752;
+
+// --- Neutral / Slate ---
+$token-neutral-50:    #fafafa;
+$token-neutral-100:   #f5f5f5;
+$token-neutral-200:   #e0e0e0;
+$token-neutral-300:   #d0d0d0;
+$token-neutral-400:   #a8a8a8;
+$token-neutral-500:   #757575;
+$token-neutral-600:   #616161;
+$token-neutral-700:   #424242;
+$token-neutral-800:   #212121;
+$token-neutral-900:   #121212;
+
+// --- Semantic ---
+$token-success:       #22c55e;
+$token-warning:       #f59e0b;
+$token-error:         #ef4444;
+$token-info:          #3b82f6;
+
+
+// --IMPORTANT: Ensure to add any new colors to the palette above and reference them in the component-level tokens below.  Avoid hardcoding colors directly in components to maintain consistency and ease of updates across the app.
+// --- Surfaces ---
+$token-bg-page:       #ffffff;
+$token-bg-section:    #f8fafc;   // light gray behind cards
+$token-bg-card:       #ffffff;
+$token-bg-input:      #dcfce7;   // light-green input fills (Figma)
+$token-bg-dark:       #0f172a;
+
+// --- Text ---
+$token-text-primary:   #212121;
+$token-text-secondary: #616161;
+$token-text-muted:     #9e9e9e;
+$token-text-inverse:   #ffffff;
+$token-text-link:      #1B5E20;
+
+// --- Border ---
+$token-border-light:   #e0e0e0;
+$token-border-default: #d0d0d0;
+$token-border-focus:   #1B5E20;
+
+// ---------------------------------------------------------
+// 2. TYPOGRAPHY TOKENS
+// ---------------------------------------------------------
+
+// --- Font Families ---
+$token-font-sans:      'Inter', 'Roboto', ui-sans-serif, system-ui, -apple-system, sans-serif;
+$token-font-display:   'Playfair Display', 'Merriweather', ui-serif, Georgia, serif;
+$token-font-mono:      'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+
+// --- Font Sizes (rem) ---
+$token-text-xs:   0.75rem;    // 12px
+$token-text-sm:   0.875rem;   // 14px
+$token-text-base: 1rem;       // 16px
+$token-text-lg:   1.125rem;   // 18px
+$token-text-xl:   1.25rem;    // 20px
+$token-text-2xl:  1.5rem;     // 24px
+$token-text-3xl:  1.875rem;   // 30px
+$token-text-4xl:  2.25rem;    // 36px
+$token-text-5xl:  3rem;       // 48px
+
+// --- Font Weights ---
+$token-weight-normal:    400;
+$token-weight-medium:    500;
+$token-weight-semibold:  600;
+$token-weight-bold:      700;
+$token-weight-extrabold: 800;
+
+// --- Line Heights ---
+$token-leading-tight:   1.25;
+$token-leading-snug:    1.375;
+$token-leading-normal:  1.5;
+$token-leading-relaxed: 1.6;  // Professional body text
+
+// --- Letter Spacing ---
+$token-tracking-tight:   -0.025em;
+$token-tracking-normal:   0em;
+$token-tracking-wide:     0.025em;
+
+// ---------------------------------------------------------
+// 3. SPACING TOKENS
+// ---------------------------------------------------------
+$token-space-0:   0;
+$token-space-px:  1px;
+$token-space-0-5: 0.125rem;   //  2px
+$token-space-1:   0.25rem;    //  4px
+$token-space-1-5: 0.375rem;   //  6px
+$token-space-2:   0.5rem;     //  8px
+$token-space-3:   0.75rem;    // 12px
+$token-space-4:   1rem;       // 16px
+$token-space-5:   1.25rem;    // 20px
+$token-space-6:   1.5rem;     // 24px
+$token-space-8:   2rem;       // 32px
+$token-space-10:  2.5rem;     // 40px
+$token-space-12:  3rem;       // 48px
+$token-space-16:  4rem;       // 64px
+$token-space-20:  5rem;       // 80px
+$token-space-24:  6rem;       // 96px
+$token-space-32:  8rem;       // 128px
+
+// ---------------------------------------------------------
+// 4. BORDER RADIUS TOKENS
+// ---------------------------------------------------------
+$token-radius-none: 0;
+$token-radius-sm:   0.25rem;   //  4px
+$token-radius-md:   0.5rem;    //  8px — general inputs / cards
+$token-radius-lg:   0.75rem;   // 12px — larger cards
+$token-radius-xl:   1rem;      // 16px
+$token-radius-2xl:  1.5rem;    // 24px — pill buttons in Figma
+$token-radius-full: 9999px;    // circles / avatars
+
+// ---------------------------------------------------------
+// 5. SHADOW TOKENS
+// ---------------------------------------------------------
+$token-shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.08);
+$token-shadow-sm:    0 1px 3px 0 rgba(0, 0, 0, 0.10);
+$token-shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.12);
+$token-shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.15);
+$token-shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.15);
+$token-shadow-glow:  none;   // Remove glow in professional design
+
+// ---------------------------------------------------------
+// 6. TRANSITION TOKENS
+// ---------------------------------------------------------
+$token-duration-fast:    150ms;
+$token-duration-normal:  300ms;
+$token-duration-slow:    500ms;
+
+$token-ease-default:     cubic-bezier(0.4, 0, 0.2, 1);
+$token-ease-in:          cubic-bezier(0.4, 0, 1, 1);
+$token-ease-out:         cubic-bezier(0, 0, 0.2, 1);
+$token-ease-in-out:      cubic-bezier(0.4, 0, 0.2, 1);
+
+$token-transition-fast:   $token-duration-fast $token-ease-default;
+$token-transition-normal: $token-duration-normal $token-ease-default;
+$token-transition-slow:   $token-duration-slow $token-ease-default;
+
+// ---------------------------------------------------------
+// 7. Z-INDEX TOKENS
+// ---------------------------------------------------------
+$token-z-dropdown:  1000;
+$token-z-sticky:    1020;
+$token-z-fixed:     1030;
+$token-z-modal-bg:  1040;
+$token-z-modal:     1050;
+$token-z-popover:   1060;
+$token-z-tooltip:   1070;
+
+// ---------------------------------------------------------
+// 8. BREAKPOINT TOKENS
+// ---------------------------------------------------------
+$token-bp-sm:   640px;
+$token-bp-md:   768px;
+$token-bp-lg:   1024px;
+$token-bp-xl:   1280px;
+$token-bp-2xl:  1536px;
+
+// ---------------------------------------------------------
+// 9. COMPONENT-LEVEL TOKENS (mapped from Figma wireframes)
+// ---------------------------------------------------------
+
+// Buttons
+$token-btn-padding-x:      $token-space-6;
+$token-btn-padding-y:      $token-space-3;
+$token-btn-radius:         4px;   // Professional subtle curve
+$token-btn-font-size:      $token-text-sm;
+$token-btn-font-weight:    $token-weight-semibold;
+$token-btn-bg:             $token-primary-500;
+$token-btn-bg-hover:       $token-primary-600;
+$token-btn-text:           $token-text-inverse;
+
+// Inputs
+$token-input-padding-x:    $token-space-4;
+$token-input-padding-y:    $token-space-3;
+$token-input-radius:       $token-radius-2xl;   // pill inputs from Figma
+$token-input-bg:           $token-bg-input;
+$token-input-border:       $token-border-light;
+$token-input-focus-ring:   $token-primary-500;
+
+// Cards
+$token-card-padding:       $token-space-6;
+$token-card-radius:        $token-radius-lg;
+$token-card-shadow:        $token-shadow-md;
+$token-card-bg:            $token-bg-card;
+
+// Navigation
+$token-nav-height:         4rem;           // 64px
+$token-nav-bg:             $token-bg-page;
+$token-nav-shadow:         $token-shadow-sm;
+
+// Footer links (About Us, Contact Us, etc.)
+$token-footer-bg:          $token-neutral-900;
+$token-footer-text:        $token-neutral-400;
+
+// ---------------------------------------------------------
+// 10. BACKWARD-COMPATIBLE ALIASES
+// ---------------------------------------------------------
+// Maps old variable names (from _variables.scss) to new
+// $token- names so existing SCSS keeps compiling after the
+// _variables file is deleted.  Migrate call-sites over time,
+// then remove this section.
+
+// --- Colors ---
+$primary-50:    $token-primary-50;
+$primary-100:   $token-primary-100;
+$primary-200:   $token-primary-200;
+$primary-300:   $token-primary-300;
+$primary-400:   $token-primary-400;
+$primary-500:   $token-primary-500;
+$primary-600:   $token-primary-600;
+$primary-700:   $token-primary-700;
+$primary-800:   $token-primary-800;
+$primary-900:   $token-primary-900;
+
+$accent-500:    $token-secondary-500;
+$accent-600:    $token-secondary-600;
+$accent-700:    $token-secondary-700;
+
+$green-100:     $token-primary-100;
+$green-400:     $token-primary-400;
+$green-500:     $token-primary-500;
+$green-600:     $token-primary-600;
+$green-700:     $token-primary-700;
+
+$emerald-500:   $token-secondary-500;
+$emerald-600:   $token-secondary-600;
+
+$success:       $token-success;
+$warning:       $token-warning;
+$error:         $token-error;
+
+$background:    $token-bg-page;
+$darkbg:        $token-bg-dark;
+$surface:       $token-bg-card;
+$surface-dark:  $token-neutral-800;
+
+$slate-50:      $token-neutral-50;
+$slate-100:     $token-neutral-100;
+$slate-200:     $token-neutral-200;
+$slate-300:     $token-neutral-300;
+$slate-400:     $token-neutral-400;
+$slate-500:     $token-neutral-500;
+$slate-600:     $token-neutral-600;
+$slate-700:     $token-neutral-700;
+$slate-800:     $token-neutral-800;
+$slate-900:     $token-neutral-900;
+
+// --- Typography ---
+$font-family-sans:    $token-font-sans;
+$font-family-display: $token-font-display;
+
+// --- Spacing ---
+$spacing-xs:   $token-space-1;
+$spacing-sm:   $token-space-2;
+$spacing-md:   $token-space-4;
+$spacing-lg:   $token-space-6;
+$spacing-xl:   $token-space-8;
+$spacing-2xl:  $token-space-12;
+$spacing-3xl:  $token-space-16;
+
+// --- Border Radius ---
+$radius-sm:    $token-radius-sm;
+$radius-md:    $token-radius-md;
+$radius-lg:    $token-radius-lg;
+$radius-xl:    $token-radius-xl;
+$radius-2xl:   4px;           // Updated to subtle curve for professional look
+$radius-3xl:   2.5rem;           // not in base tokens — kept as literal
+$radius-full:  $token-radius-full;
+
+// --- Shadows ---
+$shadow-soft:   $token-shadow-sm;
+$shadow-medium: $token-shadow-md;
+$shadow-large:  $token-shadow-lg;
+$shadow-glow:   $token-shadow-glow;
+
+// --- Transitions ---
+$transition-fast:    $token-transition-fast;
+$transition-normal:  $token-transition-normal;
+$transition-slow:    $token-transition-slow;
+$transition-cubic:   500ms cubic-bezier(0.34, 1.56, 0.64, 1);  // spring-like ease used in components

@@ -1,0 +1,108 @@
+// ==============================================
+// HOME — Styles specific to homepage sections
+// ==============================================
+
+@import "design-tokens";
+@import "mixins";
+
+// ===== HERO PARALLAX DECORATIVE BLOBS (removed for professional design) =====
+.hero-blob {
+  display: none;
+}
+
+// ===== STATISTICS COUNTER ANIMATION =====
+.stat-counter {
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s ease;
+}
+
+// ===== IMPACT CARD (professional styling with border) =====
+.impact-card {
+  position: relative;
+  overflow: hidden;
+  transition: all $transition-normal;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+
+  &:hover {
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+    border-color: #1B5E20;
+  }
+}
+
+// ===== TESTIMONIALS (professional styling) =====
+.testimonial-card {
+  position: relative;
+  padding: $spacing-xl;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all $transition-normal;
+
+  &::before {
+    content: '';  /* Remove quotation mark for cleaner professional look */
+  }
+
+  &:hover {
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+    border-color: #1B5E20;
+  }
+}
+
+// ===== PARTNERS MARQUEE =====
+.partners-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+
+  .marquee-inner {
+    display: inline-flex;
+    animation: marquee 30s linear infinite;
+    gap: $spacing-3xl;
+  }
+
+  &:hover .marquee-inner {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+// ===== NEWSLETTER / CTA SECTION (professional styling) =====
+.cta-glow {
+  position: relative;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+// ===== HOW IT WORKS — CONNECTOR LINE (professional solid styling) =====
+.how-it-works-step {
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 3.5rem;
+    bottom: -1.5rem;
+    width: 1px;
+    background: #e0e0e0;
+    opacity: 1;
+  }
+}
+
+// ===== FOOD TYPE CARDS (Slider items - professional styling) =====
+.food-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all $transition-normal;
+
+  &:hover {
+    border-color: #1B5E20;
+    box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1);
+  }
+}
